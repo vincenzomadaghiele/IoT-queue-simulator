@@ -42,9 +42,10 @@ class Measure:
         self.waitingDelay = WaitingDelay
         
 class Client:
-    def __init__(self,type,arrival_time):
+    def __init__(self,type,arrival_time,service_time):
         self.type = type
         self.arrival_time = arrival_time
+        self.service_time = service_time
 
 class Server(object):
     # constructor
@@ -71,7 +72,7 @@ def arrival(time, FES, queue):
     users += 1
     
     # create a record for the client
-    client = Client(TYPE1,time)
+    client = Client(TYPE1,time,0)
 
     # insert the record in the queue
     queue.append(client)
@@ -85,6 +86,7 @@ def arrival(time, FES, queue):
         # schedule when the client will finish the server
         FES.put((time + service_time, "departure"))
         data.serviceTime += service_time
+        client.service_time = service_time
         
     elif users > BUFFER_SIZE + FOG_NODES:
         # if buffer is full send pkt to cloud
@@ -121,7 +123,8 @@ def departure(time, FES, queue):
         FES.put((time + service_time, "departure"))
         data.serviceTime += service_time
         
-        next_client = queue[0]
+        next_client = queue[FOG_NODES - 1]
+        next_client.service_time = service_time
         data.waitingDelay.append(time - next_client.arrival_time)
 
 
@@ -154,20 +157,20 @@ if __name__ == '__main__':
     print("No. of users in the queue:", users)
     print("No. of arrivals =", data.arr)
     print("No. of departures =", data.dep)
-    print("Load: ", SERVICE/ARRIVAL)
+    print("Load:", SERVICE/ARRIVAL)
     print()
-    print("Arrival rate: ", data.arr/time)
-    print("Departure rate: ", data.dep/time)
+    print("Arrival rate:", data.arr/time)
+    print("Departure rate:", data.dep/time)
     print()
-    print("Average number of users: ",data.ut/time)
-    print("Average delay: ", data.delay/data.dep)
-    print("Actual queue size: ",len(MM1))
+    print("Average number of users:",data.ut/time)
+    print("Average delay:", data.delay/data.dep)
+    print("Actual queue size:",len(MM1))
     print("Average service time:", data.serviceTime/data.dep)
     print()
-    print("(1) Number of locally pre-processed packets: ", data.locallyPreprocessed)
-    print("(2) Number of pre-processing forwarded packets: ", data.toCloud)
-    print("(3) Average number of packets in the system: ", data.ut/time)
-    print("(4) Average queueing delay: ", data.delay/data.dep)
+    print("(1) Number of locally pre-processed packets:", data.locallyPreprocessed)
+    print("(2) Number of pre-processing forwarded packets:", data.toCloud)
+    print("(3) Average number of packets in the system:", data.ut/time)
+    print("(4) Average queueing delay:", data.delay/data.dep)
     # Distribution of queueing delay
     fig,ax = plt.subplots(1,1)
     sns.distplot(data.queueingDelay, hist=False)
@@ -178,12 +181,12 @@ if __name__ == '__main__':
     plt.show()
 
     if len(data.waitingDelay) > 0:
-        print("(5.a) Average waiting delay over all packets: ", sum(data.waitingDelay)/data.dep)
-        print("(5.b) Average waiting delay over packets that experience delay: ", sum(data.waitingDelay)/len(data.waitingDelay))
+        print("(5.a) Average waiting delay over all packets:", sum(data.waitingDelay)/data.dep)
+        print("(5.b) Average waiting delay over packets that experience delay:", sum(data.waitingDelay)/len(data.waitingDelay))
     
-    print("(6) Average buffer occupancy: ")
-    print("(7) Pre-processing forward probability: ")
-    print("(8) Busy time: ")
+    print("(6) Average buffer occupancy:")
+    print("(7) Pre-processing forward probability:")
+    print("(8) Busy time:")
 
     if len(MM1)>0:
         print()
