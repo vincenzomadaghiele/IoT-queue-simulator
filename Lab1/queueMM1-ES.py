@@ -15,7 +15,7 @@ TYPE1 = 1
 
 # SYSTEM PARAMS 
 BUFFER_SIZE = float('inf')
-FOG_NODES = 1 # number of fog nodes
+FOG_NODES = 5 # number of fog nodes
 
 # SIMULATION PARAMS
 SIM_TIME = 500000
@@ -28,7 +28,8 @@ MM1 = [] # clients queue
 
 class Measure:
     def __init__(self, Narr, Ndep, NAveraegUser, OldTimeEvent, AverageDelay, 
-                 ToCloud, NlocallyPreprocessed, ServTime, QueueingDelay, WaitingDelay):
+                 ToCloud, NlocallyPreprocessed, ServTime, QueueingDelay, WaitingDelay,
+                 BusyTime):
         self.arr = Narr # number of arrivals
         self.dep = Ndep # number of departures
         self.ut = NAveraegUser
@@ -130,7 +131,7 @@ def departure(time, FES, queue):
 
 if __name__ == '__main__':
     
-    data = Measure(0,0,0,0,0,0,0,0,[],[])
+    data = Measure(0,0,0,0,0,0,0,0,[],[],0)
     
     # simulation time 
     time = 0
@@ -171,6 +172,7 @@ if __name__ == '__main__':
     print("(2) Number of pre-processing forwarded packets:", data.toCloud)
     print("(3) Average number of packets in the system:", data.ut/time)
     print("(4) Average queueing delay:", data.delay/data.dep)
+    
     # Distribution of queueing delay
     fig,ax = plt.subplots(1,1)
     sns.distplot(data.queueingDelay, hist=False)
@@ -184,9 +186,9 @@ if __name__ == '__main__':
         print("(5.a) Average waiting delay over all packets:", sum(data.waitingDelay)/data.dep)
         print("(5.b) Average waiting delay over packets that experience delay:", sum(data.waitingDelay)/len(data.waitingDelay))
     
-    print("(6) Average buffer occupancy:")
-    print("(7) Pre-processing forward probability:")
-    print("(8) Busy time:")
+    print("(6) Average buffer occupancy:", data.ut/time)
+    print("(7) Pre-processing forward probability:", data.toCloud/data.arr)
+    print("(8) Busy time:", data.serviceTime)
 
     if len(MM1)>0:
         print()
