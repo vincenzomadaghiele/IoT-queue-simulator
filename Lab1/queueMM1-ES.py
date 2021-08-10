@@ -15,7 +15,7 @@ ARRIVAL = SERVICE/LOAD # av inter-arrival time
 TYPE1 = 1 
 
 # SYSTEM PARAMS 
-BUFFER_SIZE = float('inf')
+BUFFER_SIZE = 3#float('inf')
 FOG_NODES = 5 # number of fog nodes
 
 # SIMULATION PARAMS
@@ -48,10 +48,11 @@ class Measure:
         self.waitingDelay = WaitingDelay
         
 class Client:
-    def __init__(self,type,arrival_time,service_time):
+    def __init__(self,type,arrival_time,service_time,fogNode):
         self.type = type
         self.arrival_time = arrival_time
         self.service_time = service_time
+        self.fogNode = fogNode
 
 class Server(object):
     # constructor
@@ -62,7 +63,7 @@ class Server(object):
 # Fog node assignment policies
 def RandomAssignFog(FreeFogNodes):
     free_indices = np.where(FreeFogNodes)[0]
-    newBusyFogIndex = np.random.choice(free_indices, 1)
+    newBusyFogIndex = np.random.choice(free_indices, 1)[0]
     FreeFogNodes[newBusyFogIndex] = False
     return newBusyFogIndex, FreeFogNodes
 
@@ -82,6 +83,7 @@ def LeastCostlyAssignFog(FreeFogNodes, costs):
 # Event handling functions
 def arrival(time, FES, queue):
     global users
+    global FreeFogNodes, FogNodesCosts
     
     #print("Arrival no. ",data.arr+1," at time ",time," with ",users," users" )
     
@@ -99,7 +101,7 @@ def arrival(time, FES, queue):
     users += 1
     
     # create a record for the client
-    client = Client(TYPE1,time,0)
+    client = Client(TYPE1,time,0,None)
 
     # insert the record in the queue
     queue.append(client)
@@ -115,6 +117,12 @@ def arrival(time, FES, queue):
         data.serviceTime += service_time
         client.service_time = service_time
         
+        # Assign a fogNode to process client
+        newBusyFogIndex, FreeFogNodes = RandomAssignFog(FreeFogNodes)
+        #newBusyFogIndex, FreeFogNodes = RoundRobinAssignFog(FreeFogNodes)
+        #newBusyFogIndex, FreeFogNodes = LeastCostlyAssignFog(FreeFogNodes, FogNodesCosts)
+        client.fogNode = newBusyFogIndex
+        
     elif users > BUFFER_SIZE + FOG_NODES:
         # if buffer is full send pkt to cloud
         data.toCloud += 1
@@ -124,6 +132,7 @@ def arrival(time, FES, queue):
 
 def departure(time, FES, queue):
     global users
+    global FreeFogNodes, FogNodesCosts
 
     #print("Departure no. ",data.dep+1," at time ",time," with ",users," users" )
     
@@ -140,6 +149,9 @@ def departure(time, FES, queue):
     data.delay += (time - client.arrival_time)
     data.queueingDelay.append(time - client.arrival_time)
     users -= 1
+    
+    # free fogNode
+    FreeFogNodes[client.fogNode] = True
         
     # see whether there are more clients to in the line
     if users > FOG_NODES - 1:
@@ -153,6 +165,13 @@ def departure(time, FES, queue):
         next_client = queue[FOG_NODES - 1]
         next_client.service_time = service_time
         data.waitingDelay.append(time - next_client.arrival_time)
+        
+        # Assign a fogNode to process client
+        newBusyFogIndex, FreeFogNodes = RandomAssignFog(FreeFogNodes)
+        #newBusyFogIndex, FreeFogNodes = RoundRobinAssignFog(FreeFogNodes)
+        #newBusyFogIndex, FreeFogNodes = LeastCostlyAssignFog(FreeFogNodes, FogNodesCosts)
+        next_client.fogNode = newBusyFogIndex
+
 
 
 if __name__ == '__main__':
