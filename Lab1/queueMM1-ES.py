@@ -20,7 +20,7 @@ FOG_NODES = 5 # number of fog nodes
 
 # SIMULATION PARAMS
 SIM_TIME = 500000
-
+ 
 # SIMULATION CONSTANTS
 arrivals = 0
 users = 0
