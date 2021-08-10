@@ -1,6 +1,7 @@
 #!/usr/bin/python3
 
 import random
+import numpy as np
 from matplotlib import pyplot as plt
 import seaborn as sns
 from queue import Queue, PriorityQueue
@@ -23,8 +24,12 @@ SIM_TIME = 500000
 # SIMULATION CONSTANTS
 arrivals = 0
 users = 0
-BusyServer = False # True: server is currently busy; False: server is currently idle
+#BusyServer = False # True: server is currently busy; False: server is currently idle
 MM1 = [] # clients queue
+# True: server is currently idle; False: server is currently busy
+FreeFogNodes = [True for fogNode in range(FOG_NODES)]
+# Extract costs as gaussian values between zero and one
+FogNodesCosts = [np.clip(np.random.normal(0.5, 0.2), 0, 1) for fogNode in range(FOG_NODES)]
 
 class Measure:
     def __init__(self, Narr, Ndep, NAveraegUser, OldTimeEvent, AverageDelay, 
@@ -54,6 +59,27 @@ class Server(object):
         # whether the server is idle or not
         self.idle = True
 
+# Fog node assignment policies
+def RandomAssignFog(FreeFogNodes):
+    free_indices = np.where(FreeFogNodes)[0]
+    newBusyFogIndex = np.random.choice(free_indices, 1)
+    FreeFogNodes[newBusyFogIndex] = False
+    return newBusyFogIndex, FreeFogNodes
+
+def RoundRobinAssignFog(FreeFogNodes):
+    for fogNode in range(len(FreeFogNodes)):
+        if FreeFogNodes[fogNode] == True:
+            FreeFogNodes[fogNode] = False
+            return fogNode, FreeFogNodes
+
+def LeastCostlyAssignFog(FreeFogNodes, costs):
+    free_indices = np.where(FreeFogNodes)[0]
+    minCost = np.argmin(np.array(costs)[free_indices])
+    newBusyFogIndex = free_indices[minCost]
+    FreeFogNodes[newBusyFogIndex] = False
+    return newBusyFogIndex, FreeFogNodes
+
+# Event handling functions
 def arrival(time, FES, queue):
     global users
     
@@ -183,8 +209,10 @@ if __name__ == '__main__':
     plt.show()
 
     if len(data.waitingDelay) > 0:
-        print("(5.a) Average waiting delay over all packets:", sum(data.waitingDelay)/data.dep)
-        print("(5.b) Average waiting delay over packets that experience delay:", sum(data.waitingDelay)/len(data.waitingDelay))
+        print("(5.a) Average waiting delay over all packets:",
+              sum(data.waitingDelay)/data.dep)
+        print("(5.b) Average waiting delay over packets that experience delay:", 
+              sum(data.waitingDelay)/len(data.waitingDelay))
     
     print("(6) Average buffer occupancy:", data.ut/time)
     print("(7) Pre-processing forward probability:", data.toCloud/data.arr)
@@ -192,5 +220,6 @@ if __name__ == '__main__':
 
     if len(MM1)>0:
         print()
-        print("Arrival time of the last element in the queue:",MM1[len(MM1)-1].arrival_time)
+        print("Arrival time of the last element in the queue:",
+              MM1[len(MM1)-1].arrival_time)
     
