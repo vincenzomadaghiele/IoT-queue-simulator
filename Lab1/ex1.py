@@ -15,7 +15,7 @@ ARRIVAL = SERVICE/LOAD # av inter-arrival time
 TYPE1 = 1
 
 # SYSTEM PARAMS 
-BUFFER_SIZE = 3 #float('inf')
+BUFFER_SIZE = 0 #float('inf')
 FOG_NODES = 5 # number of fog nodes
 
 # SIMULATION PARAMS
@@ -125,8 +125,8 @@ def arrival(time, FES, queue):
     # if the server is idle start the service
     if users <= FOG_NODES:
         # Assign a fogNode to process client
-        newBusyFogIndex, FreeFogNodes = SortedAssignFog(FreeFogNodes)
-        #newBusyFogIndex, FreeFogNodes = RandomAssignFog(FreeFogNodes)
+        #newBusyFogIndex, FreeFogNodes = SortedAssignFog(FreeFogNodes)
+        newBusyFogIndex, FreeFogNodes = RandomAssignFog(FreeFogNodes)
         #newBusyFogIndex, FreeFogNodes = RoundRobinAssignFog(FreeFogNodes, RRindex)
         #newBusyFogIndex, FreeFogNodes = LeastCostlyAssignFog(FreeFogNodes, FogNodesCosts)
         client.fogNode = newBusyFogIndex
@@ -183,8 +183,8 @@ def departure(time, FES, queue):
         next_client = queue[FOG_NODES - 1]
         
         # Assign a fogNode to process client
-        newBusyFogIndex, FreeFogNodes = SortedAssignFog(FreeFogNodes)
-        #newBusyFogIndex, FreeFogNodes = RandomAssignFog(FreeFogNodes)
+        #newBusyFogIndex, FreeFogNodes = SortedAssignFog(FreeFogNodes)
+        newBusyFogIndex, FreeFogNodes = RandomAssignFog(FreeFogNodes)
         #newBusyFogIndex, FreeFogNodes = RoundRobinAssignFog(FreeFogNodes, RRindex)
         #newBusyFogIndex, FreeFogNodes = LeastCostlyAssignFog(FreeFogNodes, FogNodesCosts)
         next_client.fogNode = newBusyFogIndex
