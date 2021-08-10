@@ -16,7 +16,7 @@ TYPE1 = 1
 
 # SYSTEM PARAMS 
 BUFFER_SIZE = 0 #float('inf')
-FOG_NODES = 5 # number of fog nodes
+FOG_NODES = 1 # number of fog nodes
 
 # SIMULATION PARAMS
 SIM_TIME = 500000
@@ -30,14 +30,17 @@ MM1 = [] # clients queue
 # FOG NODES
 # True: server is currently idle; False: server is currently busy
 FreeFogNodes = [True for fogNode in range(FOG_NODES)]
-# Extract costs as gaussian values between zero and one
-FogNodesCosts = [np.clip(np.random.normal(0.5, 0.2), 0, 1) for fogNode in range(FOG_NODES)]
 # Busy time for each fog node
 FogBusyTime = np.zeros(FOG_NODES)
 # Average service time for each fogNode
 var = 5
 FogNodesServTime = [np.clip(np.random.normal(SERVICE, var), SERVICE-var, SERVICE+var) for fogNode in range(FOG_NODES)]
-RRindex = 0
+# Cost is inversely proportional to service time i.e. faster node --> more expensive
+FogNodesCosts = np.divide(1, FogNodesServTime)
+# Extract costs as gaussian values between zero and one
+#FogNodesCosts = [np.clip(np.random.normal(0.5, 0.2), 0, 1) for fogNode in range(FOG_NODES)]
+RRindex = 0 # needed for Round Robin Assignment
+
 
 class Measure:
     def __init__(self, Narr, Ndep, NAveraegUser, OldTimeEvent, AverageDelay, 
@@ -68,6 +71,7 @@ class Server(object):
         # whether the server is idle or not
         self.idle = True
 
+
 # Fog node assignment policies
 def SortedAssignFog(FreeFogNodes):
     for fogNode in range(len(FreeFogNodes)):
@@ -94,6 +98,7 @@ def LeastCostlyAssignFog(FreeFogNodes, costs):
     newBusyFogIndex = free_indices[minCost]
     FreeFogNodes[newBusyFogIndex] = False
     return newBusyFogIndex, FreeFogNodes
+
 
 # Event handling functions
 def arrival(time, FES, queue):
@@ -125,8 +130,8 @@ def arrival(time, FES, queue):
     # if the server is idle start the service
     if users <= FOG_NODES:
         # Assign a fogNode to process client
-        #newBusyFogIndex, FreeFogNodes = SortedAssignFog(FreeFogNodes)
-        newBusyFogIndex, FreeFogNodes = RandomAssignFog(FreeFogNodes)
+        newBusyFogIndex, FreeFogNodes = SortedAssignFog(FreeFogNodes)
+        #newBusyFogIndex, FreeFogNodes = RandomAssignFog(FreeFogNodes)
         #newBusyFogIndex, FreeFogNodes = RoundRobinAssignFog(FreeFogNodes, RRindex)
         #newBusyFogIndex, FreeFogNodes = LeastCostlyAssignFog(FreeFogNodes, FogNodesCosts)
         client.fogNode = newBusyFogIndex
@@ -183,8 +188,8 @@ def departure(time, FES, queue):
         next_client = queue[FOG_NODES - 1]
         
         # Assign a fogNode to process client
-        #newBusyFogIndex, FreeFogNodes = SortedAssignFog(FreeFogNodes)
-        newBusyFogIndex, FreeFogNodes = RandomAssignFog(FreeFogNodes)
+        newBusyFogIndex, FreeFogNodes = SortedAssignFog(FreeFogNodes)
+        #newBusyFogIndex, FreeFogNodes = RandomAssignFog(FreeFogNodes)
         #newBusyFogIndex, FreeFogNodes = RoundRobinAssignFog(FreeFogNodes, RRindex)
         #newBusyFogIndex, FreeFogNodes = LeastCostlyAssignFog(FreeFogNodes, FogNodesCosts)
         next_client.fogNode = newBusyFogIndex
