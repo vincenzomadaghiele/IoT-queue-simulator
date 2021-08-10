@@ -15,7 +15,7 @@ ARRIVAL = SERVICE/LOAD # av inter-arrival time
 TYPE1 = 1 
 
 # SYSTEM PARAMS 
-BUFFER_SIZE = 3#float('inf')
+BUFFER_SIZE = 3 #float('inf')
 FOG_NODES = 5 # number of fog nodes
 
 # SIMULATION PARAMS
@@ -26,10 +26,18 @@ arrivals = 0
 users = 0
 #BusyServer = False # True: server is currently busy; False: server is currently idle
 MM1 = [] # clients queue
+
+# FOG NODES
 # True: server is currently idle; False: server is currently busy
 FreeFogNodes = [True for fogNode in range(FOG_NODES)]
 # Extract costs as gaussian values between zero and one
 FogNodesCosts = [np.clip(np.random.normal(0.5, 0.2), 0, 1) for fogNode in range(FOG_NODES)]
+# Busy time for each fog node
+FogBusyTime = np.zeros(FOG_NODES)
+# Average service time for each fogNode
+var = 5
+FogNodesServTime = [np.clip(np.random.normal(SERVICE, var), SERVICE-var, SERVICE+var) for fogNode in range(FOG_NODES)]
+
 
 class Measure:
     def __init__(self, Narr, Ndep, NAveraegUser, OldTimeEvent, AverageDelay, 
@@ -63,7 +71,7 @@ class Server(object):
 # Fog node assignment policies
 def RandomAssignFog(FreeFogNodes):
     free_indices = np.where(FreeFogNodes)[0]
-    newBusyFogIndex = np.random.choice(free_indices, 1)[0]
+    newBusyFogIndex = np.random.choice(free_indices)
     FreeFogNodes[newBusyFogIndex] = False
     return newBusyFogIndex, FreeFogNodes
 
@@ -83,7 +91,7 @@ def LeastCostlyAssignFog(FreeFogNodes, costs):
 # Event handling functions
 def arrival(time, FES, queue):
     global users
-    global FreeFogNodes, FogNodesCosts
+    global FreeFogNodes, FogNodesCosts, FogBusyTime
     
     #print("Arrival no. ",data.arr+1," at time ",time," with ",users," users" )
     
@@ -108,20 +116,25 @@ def arrival(time, FES, queue):
 
     # if the server is idle start the service
     if users <= FOG_NODES:
-        # sample the service time
-        service_time = random.expovariate(1.0/SERVICE)
-        #service_time = 1 + random.uniform(0, SEVICE_TIME)
-
-        # schedule when the client will finish the server
-        FES.put((time + service_time, "departure"))
-        data.serviceTime += service_time
-        client.service_time = service_time
-        
         # Assign a fogNode to process client
         newBusyFogIndex, FreeFogNodes = RandomAssignFog(FreeFogNodes)
         #newBusyFogIndex, FreeFogNodes = RoundRobinAssignFog(FreeFogNodes)
         #newBusyFogIndex, FreeFogNodes = LeastCostlyAssignFog(FreeFogNodes, FogNodesCosts)
         client.fogNode = newBusyFogIndex
+
+        fogService = FogNodesServTime[client.fogNode]
+
+        # sample the service time
+        #service_time = random.expovariate(1.0/SERVICE)
+        #service_time = 1 + random.uniform(0, SEVICE_TIME)
+        service_time = random.expovariate(1.0/fogService)
+
+        # schedule when the client will finish the server
+        FES.put((time + service_time, "departure"))
+        data.serviceTime += service_time
+        client.service_time = service_time
+        # Update busy time 
+        FogBusyTime[client.fogNode] += client.service_time
         
     elif users > BUFFER_SIZE + FOG_NODES:
         # if buffer is full send pkt to cloud
@@ -132,7 +145,7 @@ def arrival(time, FES, queue):
 
 def departure(time, FES, queue):
     global users
-    global FreeFogNodes, FogNodesCosts
+    global FreeFogNodes, FogNodesCosts, FogBusyTime
 
     #print("Departure no. ",data.dep+1," at time ",time," with ",users," users" )
     
@@ -155,16 +168,8 @@ def departure(time, FES, queue):
         
     # see whether there are more clients to in the line
     if users > FOG_NODES - 1:
-        # sample the service time
-        service_time = random.expovariate(1.0/SERVICE)
-
-        # schedule when the client will finish the server
-        FES.put((time + service_time, "departure"))
-        data.serviceTime += service_time
-        
+        # Next client is the first in the queue after the ones in the fog nodes
         next_client = queue[FOG_NODES - 1]
-        next_client.service_time = service_time
-        data.waitingDelay.append(time - next_client.arrival_time)
         
         # Assign a fogNode to process client
         newBusyFogIndex, FreeFogNodes = RandomAssignFog(FreeFogNodes)
@@ -172,13 +177,28 @@ def departure(time, FES, queue):
         #newBusyFogIndex, FreeFogNodes = LeastCostlyAssignFog(FreeFogNodes, FogNodesCosts)
         next_client.fogNode = newBusyFogIndex
 
+        fogService = FogNodesServTime[client.fogNode]
+
+        # sample the service time
+        #service_time = random.expovariate(1.0/SERVICE)
+        service_time = random.expovariate(1.0/fogService)
+
+        # schedule when the client will finish the server
+        FES.put((time + service_time, "departure"))
+        data.serviceTime += service_time
+        
+        # Update stats
+        next_client.service_time = service_time
+        data.waitingDelay.append(time - next_client.arrival_time)
+        FogBusyTime[next_client.fogNode] += next_client.service_time
+
 
 
 if __name__ == '__main__':
     
     data = Measure(0,0,0,0,0,0,0,0,[],[],0)
     
-    # simulation time 
+    # simulation time
     time = 0
     
     # the list of events in the form: (time, type)
@@ -220,8 +240,8 @@ if __name__ == '__main__':
     
     # Distribution of queueing delay
     fig,ax = plt.subplots(1,1)
-    sns.distplot(data.queueingDelay, hist=False)
-    #ax.hist(data.queueingDelay, bins=500)
+    #sns.distplot(data.queueingDelay, hist=False)
+    ax.hist(data.queueingDelay, bins=500)
     ax.set_title("Distribution of queueing delay")
     ax.set_xlabel('queueing delay')
     ax.set_ylabel('packets')
@@ -236,6 +256,7 @@ if __name__ == '__main__':
     print("(6) Average buffer occupancy:", data.ut/time)
     print("(7) Pre-processing forward probability:", data.toCloud/data.arr)
     print("(8) Busy time:", data.serviceTime)
+    print('(9) Total operational costs:', sum(FogBusyTime * FogNodesCosts))
 
     if len(MM1)>0:
         print()
