@@ -27,6 +27,7 @@ SIM_TIME = 500000
 # SIMULATION CONSTANTS
 arrivals = 0
 users = 0
+users_in_buffer = 0
 #BusyServer = False # True: server is currently busy; False: server is currently idle
 MM1 = [] # clients queue
 
@@ -47,14 +48,16 @@ RRindex = 0 # needed for Round Robin Assignment
 
 class Measure:
     def __init__(self, Narr, Ndep, NAveraegUser, OldTimeEvent, AverageDelay, 
-                 ToCloud, NlocallyPreprocessed, ServTime, QueueingDelay, WaitingDelay,
-                 BusyTime):
+                 bufferOccupancy, oldTbuffer, ToCloud, NlocallyPreprocessed, 
+                 ServTime, QueueingDelay, WaitingDelay, BusyTime):
         self.arr = Narr # number of arrivals
         self.dep = Ndep # number of departures
         self.ut = NAveraegUser
         self.oldT = OldTimeEvent
         self.delay = AverageDelay 
         # new metrics
+        self.bufferOccupancy = bufferOccupancy
+        self.oldTbuffer = oldTbuffer
         self.toCloud = ToCloud # pkts sent to cloud
         self.locallyPreprocessed = NlocallyPreprocessed # pkts sent to cloud
         self.serviceTime = ServTime
@@ -105,7 +108,7 @@ def LeastCostlyAssignFog(FreeFogNodes, costs):
 
 # Event handling functions
 def arrival(time, FES, queue):
-    global users
+    global users, users_in_buffer
     global FreeFogNodes, FogNodesCosts, FogBusyTime
     global RRindex
     
@@ -123,7 +126,7 @@ def arrival(time, FES, queue):
     FES.put((time + inter_arrival, "arrival"))
 
     users += 1
-    
+        
     # create a record for the client
     client = Client(TYPE1,time,0,None)
 
@@ -155,6 +158,12 @@ def arrival(time, FES, queue):
         # Update busy time 
         FogBusyTime[client.fogNode] += client.service_time
         
+    elif users > FOG_NODES and users <= BUFFER_SIZE + FOG_NODES:
+        # users go into the buffer
+        data.bufferOccupancy += users_in_buffer * (time - data.oldTbuffer)
+        data.oldTbuffer = time
+        users_in_buffer += 1
+
     elif users > BUFFER_SIZE + FOG_NODES:
         # if buffer is full send pkt to cloud
         data.toCloud += 1
@@ -163,7 +172,7 @@ def arrival(time, FES, queue):
         queue.pop(-1)
 
 def departure(time, FES, queue):
-    global users
+    global users, users_in_buffer
     global FreeFogNodes, FogNodesCosts, FogBusyTime
     global RRindex
 
@@ -185,7 +194,7 @@ def departure(time, FES, queue):
     
     # free fogNode
     FreeFogNodes[client.fogNode] = True
-        
+    
     # see whether there are more clients to in the line
     if users > FOG_NODES - 1:
         # Next client is the first in the queue after the ones in the fog nodes
@@ -214,12 +223,16 @@ def departure(time, FES, queue):
         next_client.service_time = service_time
         data.waitingDelay.append(time - next_client.arrival_time)
         FogBusyTime[next_client.fogNode] += next_client.service_time
-
+        
+        # update buffer counter
+        data.bufferOccupancy += users_in_buffer * (time - data.oldTbuffer)
+        data.oldTbuffer = time
+        users_in_buffer -= 1
 
 
 if __name__ == '__main__':
     
-    data = Measure(0,0,0,0,0,0,0,0,[],[],0)
+    data = Measure(0,0,0,0,0,0,0,0,0,0,[],[],0)
     
     # simulation time
     time = 0
@@ -276,7 +289,7 @@ if __name__ == '__main__':
         print("(5.b) Average waiting delay over packets that experience delay:", 
               sum(data.waitingDelay)/len(data.waitingDelay))
     
-    print("(6) Average buffer occupancy:", data.ut/time)
+    print("(6) Average buffer occupancy:", data.bufferOccupancy/time)
     print("(7) Pre-processing forward probability:", data.toCloud/data.arr)
     print("(8) Busy time:", data.serviceTime)
     print('(9) Total operational costs:', sum(FogBusyTime * FogNodesCosts))
