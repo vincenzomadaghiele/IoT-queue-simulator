@@ -64,7 +64,6 @@ class Server(object):
 def arrival(time, FES, queue):
     global users
     global FogBusyTime
-
     
     #print("Arrival no. ",data.arr+1," at time ",time," with ",users," users" )
     

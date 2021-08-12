@@ -228,7 +228,7 @@ def departure(time, FES, queue):
         data.bufferOccupancy += users_in_buffer * (time - data.oldTbuffer)
         data.oldTbuffer = time
         users_in_buffer -= 1
-
+    
 
 if __name__ == '__main__':
     
