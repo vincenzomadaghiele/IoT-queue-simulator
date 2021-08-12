@@ -1,4 +1,7 @@
 #!/usr/bin/python3
+'''
+This is the basic solution containing all the code for Lab 1
+'''
 
 import random
 import numpy as np
