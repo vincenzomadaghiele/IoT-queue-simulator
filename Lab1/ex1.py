@@ -8,28 +8,31 @@ from queue import Queue, PriorityQueue
 
 random.seed(42)
 
-# SYSTEM CONSTANTS
-SERVICE = 10.0 # av service time
-ARRIVAL = 12.0 # av inter-arrival time
-LOAD=SERVICE/ARRIVAL
-TYPE1 = 1
 
-# SYSTEM PARAMS 
-BUFFER_SIZE = 0 #float('inf')
-FOG_NODES = 1 # number of fog nodes
+def inititalize():
+    global ARRIVAL, LOAD, BUFFER_SIZE, FOG_NODES, SIM_TIME, TYPE1, arrivals, users, MM1, FogBusyTime
+    # SYSTEM CONSTANTS
+    #SERVICE = 4.0 # av service time
+    ARRIVAL = 12.0 # av inter-arrival time
+    LOAD=SERVICE/ARRIVAL
+    TYPE1 = 1
 
-# SIMULATION PARAMS
-SIM_TIME = 500000
+    # SYSTEM PARAMS 
+    BUFFER_SIZE = 0 #float('inf')
+    FOG_NODES = 1 # number of fog nodes
 
-# SIMULATION CONSTANTS
-arrivals = 0
-users = 0
-#BusyServer = False # True: server is currently busy; False: server is currently idle
-MM1 = [] # clients queue
+    # SIMULATION PARAMS
+    SIM_TIME= 500000
 
-# FOG NODES
-# Busy time for each fog node
-FogBusyTime = 0
+    # SIMULATION CONSTANTS
+    arrivals = 0
+    users = 0
+    #BusyServer = False # True: server is currently busy; False: server is currently idle
+    MM1 = [] # clients queue
+
+    # FOG NODES
+    # Busy time for each fog node
+    FogBusyTime = 0
 
 class Measure:
     def __init__(self, Narr, Ndep, NAveraegUser, OldTimeEvent, AverageDelay, 
@@ -150,70 +153,97 @@ def departure(time, FES, queue):
 
 
 if __name__ == '__main__':
+    load_list=[]
+    loss_pr=[]
+    avg_users=[]
+
+    for SERVICE in range (1,240,2):
+        inititalize()
+        data = Measure(0,0,0,0,0,0,0,0,[],[],0)
+        
+        # simulation time
+        time = 0
+        
+        # the list of events in the form: (time, type)
+        FES = PriorityQueue()
+        
+        # schedule the first arrival at t=0
+        FES.put((0, "arrival"))
+        
+        # simulate until the simulated time reaches a constant
+        while time < SIM_TIME:
+            (time, event_type) = FES.get()
+        
+            if event_type == "arrival":
+                arrival(time, FES, MM1)
+        
+            elif event_type == "departure":
+                departure(time, FES, MM1)
+        """
+        # print output data
+        print('MEASUREMENTS')
+        print('-'*40)
+        print("No. of users in the queue:", users)
+        print("No. of arrivals =", data.arr)
+        print("No. of departures =", data.dep)
+        print("Load:", SERVICE/ARRIVAL)
+        print()
+        print("Arrival rate:", data.arr/time)
+        print("Departure rate:", data.dep/time)
+        print()
+        print("Average number of users:",data.ut/time)
+        print("Average delay:", data.delay/data.dep)
+        print("Actual queue size:",len(MM1))
+        print("Average service time:", data.serviceTime/data.dep)
+        print()
+        print("(1) Number of locally pre-processed packets:", data.locallyPreprocessed)
+        print("(2) Number of pre-processing forwarded packets:", data.toCloud)
+        print("(3) Average number of packets in the system:", data.ut/time)
+        print("(4) Average queueing delay:", data.delay/data.dep)
+        
+        # Distribution of queueing delay
+        #fig,ax = plt.subplots(1,1)
+        #sns.distplot(data.queueingDelay, hist=False)
+        # ax.hist(data.queueingDelay, bins=500)
+        # ax.set_title("Distribution of queueing delay")
+        # ax.set_xlabel('queueing delay')
+        # ax.set_ylabel('packets')
+        # plt.show()
+
+        if len(data.waitingDelay) > 0:
+            print("(5.a) Average waiting delay over all packets:",
+                  sum(data.waitingDelay)/data.dep)
+            print("(5.b) Average waiting delay over packets that experience delay:", 
+                  sum(data.waitingDelay)/len(data.waitingDelay))
+        
+        print("(7) Pre-processing forward probability:", data.toCloud/data.arr)
+        print("(8) Busy time:", data.serviceTime)
+        #print('(9) Total operational costs:', sum(FogBusyTime * FogNodesCosts))
+        
+        if len(MM1)>0:
+            print()
+            print("Arrival time of the last element in the queue:",
+                  MM1[len(MM1)-1].arrival_time)
+        """
+        load_list.append(LOAD)
+        loss_pr.append(data.toCloud/data.arr)
+        avg_users.append(data.ut/time)
     
-    data = Measure(0,0,0,0,0,0,0,0,[],[],0)
     
-    # simulation time
-    time = 0
-    
-    # the list of events in the form: (time, type)
-    FES = PriorityQueue()
-    
-    # schedule the first arrival at t=0
-    FES.put((0, "arrival"))
-    
-    # simulate until the simulated time reaches a constant
-    while time < SIM_TIME:
-        (time, event_type) = FES.get()
-    
-        if event_type == "arrival":
-            arrival(time, FES, MM1)
-    
-        elif event_type == "departure":
-            departure(time, FES, MM1)
-    
-    # print output data
-    print('MEASUREMENTS')
-    print('-'*40)
-    print("No. of users in the queue:", users)
-    print("No. of arrivals =", data.arr)
-    print("No. of departures =", data.dep)
-    print("Load:", SERVICE/ARRIVAL)
-    print()
-    print("Arrival rate:", data.arr/time)
-    print("Departure rate:", data.dep/time)
-    print()
-    print("Average number of users:",data.ut/time)
-    print("Average delay:", data.delay/data.dep)
-    print("Actual queue size:",len(MM1))
-    print("Average service time:", data.serviceTime/data.dep)
-    print()
-    print("(1) Number of locally pre-processed packets:", data.locallyPreprocessed)
-    print("(2) Number of pre-processing forwarded packets:", data.toCloud)
-    print("(3) Average number of packets in the system:", data.ut/time)
-    print("(4) Average queueing delay:", data.delay/data.dep)
-    
-    # Distribution of queueing delay
-    fig,ax = plt.subplots(1,1)
-    #sns.distplot(data.queueingDelay, hist=False)
-    ax.hist(data.queueingDelay, bins=500)
-    ax.set_title("Distribution of queueing delay")
-    ax.set_xlabel('queueing delay')
-    ax.set_ylabel('packets')
+    plt.plot(np.array(load_list),np.array(load_list)/(1+np.array(load_list)),label='Theoretical values')
+    plt.scatter(load_list,loss_pr, s=7, c='r', label='Simulated values')
+    plt.grid()
+    plt.legend()
+    plt.xlabel("Load")
+    plt.ylabel("Loss probability")
+    plt.ylim([0,1])
     plt.show()
 
-    if len(data.waitingDelay) > 0:
-        print("(5.a) Average waiting delay over all packets:",
-              sum(data.waitingDelay)/data.dep)
-        print("(5.b) Average waiting delay over packets that experience delay:", 
-              sum(data.waitingDelay)/len(data.waitingDelay))
-    
-    print("(7) Pre-processing forward probability:", data.toCloud/data.arr)
-    print("(8) Busy time:", data.serviceTime)
-    #print('(9) Total operational costs:', sum(FogBusyTime * FogNodesCosts))
+    plt.plot(np.array(load_list),np.array(load_list)/(1+np.array(load_list)))
+    plt.plot(load_list,avg_users)
+    plt.grid()
+    plt.xlabel("Load")
+    plt.ylabel("Avg number of users")
+    plt.show()
 
-    if len(MM1)>0:
-        print()
-        print("Arrival time of the last element in the queue:",
-              MM1[len(MM1)-1].arrival_time)
-    
+
