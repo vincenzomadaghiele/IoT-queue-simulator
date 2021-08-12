@@ -288,7 +288,9 @@ if __name__ == '__main__':
               sum(data.waitingDelay)/data.dep)
         print("(5.b) Average waiting delay over packets that experience delay:", 
               sum(data.waitingDelay)/len(data.waitingDelay))
-    
+    else:
+        print("(5.a) Average waiting delay: None")
+
     print("(6) Average buffer occupancy:", data.bufferOccupancy/time)
     print("(7) Pre-processing forward probability:", data.toCloud/data.arr)
     print("(8) Busy time:", data.serviceTime)
