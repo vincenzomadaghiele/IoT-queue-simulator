@@ -137,6 +137,7 @@ def arrival(time, FES, queue):
         client.fogNode = newBusyFogIndex
         RRindex = newBusyFogIndex
 
+        # service time of the selected fog node
         fogService = FogNodesServTime[client.fogNode]
 
         # sample the service time
@@ -195,6 +196,7 @@ def departure(time, FES, queue):
         next_client.fogNode = newBusyFogIndex
         RRindex = newBusyFogIndex
 
+        # service time of the selected fog node
         fogService = FogNodesServTime[client.fogNode]
 
         # sample the service time
