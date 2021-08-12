@@ -134,6 +134,7 @@ def departure(time, FES, queue):
         # Next client is the first in the queue after the ones in the fog nodes
         next_client = queue[FOG_NODES - 1]
 
+
         # sample the service time
         service_time = random.expovariate(1.0/SERVICE)
 
