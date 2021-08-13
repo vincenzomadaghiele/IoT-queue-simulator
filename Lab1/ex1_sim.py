@@ -51,12 +51,14 @@ if __name__ == '__main__':
     plt.ylim([0,1])
     plt.show()
 
-    # Avg number of users vs Load
-    plt.plot(np.array(load_list),np.array(load_list)/(1+np.array(load_list)))
-    plt.plot(load_list,avg_users)
+    # Avg number of users vs Load    
+    plt.plot(np.array(load_list),np.array(load_list)/(1+np.array(load_list)),label='Theoretical values')
+    plt.scatter(load_list,avg_users, s=7, c='r', label='Simulated values')
     plt.grid()
+    plt.legend()
     plt.xlabel("Load")
     plt.ylabel("Avg number of users")
     plt.ylim([0,1])
     plt.show()
+
 
