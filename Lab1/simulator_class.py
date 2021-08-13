@@ -210,7 +210,7 @@ class Simulator():
             self.data.oldTbuffer = time
             self.users_in_buffer -= 1
             
-    def simulate(self):
+    def simulate(self, print_everything = True):
         # simulation time
         time = 0
                 
@@ -227,55 +227,55 @@ class Simulator():
             elif event_type == "departure":
                 self.departure(time, self.FES, self.MM1)
         
-        # print output data
-        print('MEASUREMENTS')
-        print('-'*40)
-        print("No. of users in the queue:", self.users)
-        print("No. of arrivals =", self.data.arr)
-        print("No. of departures =", self.data.dep)
-        print("Load:", self.SERVICE/self.ARRIVAL)
-        print()
-        print("Arrival rate:", self.data.arr/time)
-        print("Departure rate:", self.data.dep/time)
-        print()
-        print("Average number of users:",self.data.ut/time)
-        print("Average delay:", self.data.delay/self.data.dep)
-        print("Actual queue size:",len(self.MM1))
-        print("Average service time:", self.data.serviceTime/self.data.dep)
-        print()
-        print("(1) Number of locally pre-processed packets:", self.data.locallyPreprocessed)
-        print("(2) Number of pre-processing forwarded packets:", self.data.toCloud)
-        print("(3) Average number of packets in the system:", self.data.ut/time)
-        print("(4) Average queueing delay:", self.data.delay/self.data.dep)
-        
-        # Distribution of queueing delay
-        fig,ax = plt.subplots(1,1)
-        #sns.distplot(data.queueingDelay, hist=False)
-        ax.hist(self.data.queueingDelay, bins=500)
-        ax.set_title("Distribution of queueing delay")
-        ax.set_xlabel('queueing delay')
-        ax.set_ylabel('packets')
-        plt.show()
-    
-        if len(self.data.waitingDelay) > 0:
-            print("(5.a) Average waiting delay over all packets:",
-                  sum(self.data.waitingDelay)/self.data.dep)
-            print("(5.b) Average waiting delay over packets that experience delay:", 
-                  sum(self.data.waitingDelay)/len(self.data.waitingDelay))
-        else:
-            print("(5.a) Average waiting delay: None")
-    
-        print("(6) Average buffer occupancy:", self.data.bufferOccupancy/time)
-        print("(7) Pre-processing forward probability:", self.data.toCloud/self.data.arr)
-        print("(8) Busy time:", self.data.serviceTime)
-        print('(9) Total operational costs:', sum(self.FogBusyTime * self.FogNodesCosts))
-    
-        if len(self.MM1)>0:
+        if print_everything:
+            # print output data
+            print('MEASUREMENTS')
+            print('-'*40)
+            print("No. of users in the queue:", self.users)
+            print("No. of arrivals =", self.data.arr)
+            print("No. of departures =", self.data.dep)
+            print("Load:", self.SERVICE/self.ARRIVAL)
             print()
-            print("Arrival time of the last element in the queue:",
-                  self.MM1[len(self.MM1)-1].arrival_time)
+            print("Arrival rate:", self.data.arr/time)
+            print("Departure rate:", self.data.dep/time)
+            print()
+            print("Average number of users:",self.data.ut/time)
+            print("Average delay:", self.data.delay/self.data.dep)
+            print("Actual queue size:",len(self.MM1))
+            print("Average service time:", self.data.serviceTime/self.data.dep)
+            print()
+            print("(1) Number of locally pre-processed packets:", self.data.locallyPreprocessed)
+            print("(2) Number of pre-processing forwarded packets:", self.data.toCloud)
+            print("(3) Average number of packets in the system:", self.data.ut/time)
+            print("(4) Average queueing delay:", self.data.delay/self.data.dep)
+            
+            # Distribution of queueing delay
+            fig,ax = plt.subplots(1,1)
+            #sns.distplot(data.queueingDelay, hist=False)
+            ax.hist(self.data.queueingDelay, bins=500)
+            ax.set_title("Distribution of queueing delay")
+            ax.set_xlabel('queueing delay')
+            ax.set_ylabel('packets')
+            plt.show()
+        
+            if len(self.data.waitingDelay) > 0:
+                print("(5.a) Average waiting delay over all packets:",
+                      sum(self.data.waitingDelay)/self.data.dep)
+                print("(5.b) Average waiting delay over packets that experience delay:", 
+                      sum(self.data.waitingDelay)/len(self.data.waitingDelay))
+            else:
+                print("(5.a) Average waiting delay: None")
+        
+            print("(6) Average buffer occupancy:", self.data.bufferOccupancy/time)
+            print("(7) Pre-processing forward probability:", self.data.toCloud/self.data.arr)
+            print("(8) Busy time:", self.data.serviceTime)
+            print('(9) Total operational costs:', sum(self.FogBusyTime * self.FogNodesCosts))
+        
+            if len(self.MM1)>0:
+                print()
+                print("Arrival time of the last element in the queue:",
+                      self.MM1[len(self.MM1)-1].arrival_time)
     
-
 
 if __name__ == '__main__':
     
@@ -293,6 +293,7 @@ if __name__ == '__main__':
 
     # instaciate simulator
     s = Simulator(data, LOAD, SERVICE, BUFFER_SIZE, FOG_NODES, SIM_TIME)
-    s.simulate()
+    print_everything = True
+    s.simulate(print_everything)
     
 
