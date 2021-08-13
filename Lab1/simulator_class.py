@@ -51,15 +51,38 @@ def SortedAssignFog(FreeFogNodes):
             FreeFogNodes[fogNode] = False
             return fogNode, FreeFogNodes
 
+def RandomAssignFog(FreeFogNodes):
+    free_indices = np.where(FreeFogNodes)[0]
+    newBusyFogIndex = np.random.choice(free_indices)
+    FreeFogNodes[newBusyFogIndex] = False
+    return newBusyFogIndex, FreeFogNodes
+
+def RoundRobinAssignFog(FreeFogNodes, startingNode):
+    shifted_indices = np.roll(np.array(range(len(FreeFogNodes))),-(startingNode+1))
+    for fogNode in shifted_indices:
+        if FreeFogNodes[fogNode] == True:
+            FreeFogNodes[fogNode] = False
+            return fogNode, FreeFogNodes
+
+def LeastCostlyAssignFog(FreeFogNodes, costs):
+    free_indices = np.where(FreeFogNodes)[0]
+    minCost = np.argmin(np.array(costs)[free_indices])
+    newBusyFogIndex = free_indices[minCost]
+    FreeFogNodes[newBusyFogIndex] = False
+    return newBusyFogIndex, FreeFogNodes
+
 
 class Simulator():
-    def __init__(self, data, LOAD = 0.85, SERVICE = 10.0, BUFFER_SIZE = 3, 
-                 FOG_NODES = 5, SIM_TIME = 500000):
+    def __init__(self, data, LOAD = 0.85, SERVICE = 10.0, ARRIVAL = 0,
+                 BUFFER_SIZE = 3, FOG_NODES = 5, SIM_TIME = 500000):
         
         # SYSTEM CONSTANTS
         self.LOAD = LOAD
         self.SERVICE = SERVICE
-        self.ARRIVAL = SERVICE/LOAD
+        if ARRIVAL == 0:
+            self.ARRIVAL = SERVICE/LOAD
+        else:
+            self.ARRIVAL = ARRIVAL
         self.TYPE1 = 1
         
         # SYSTEM PARAMS 
@@ -179,7 +202,7 @@ class Simulator():
         # see whether there are more clients to in the line
         if self.users > self.FOG_NODES - 1:
             # Next client is the first in the queue after the ones in the fog nodes
-            next_client = queue[FOG_NODES - 1]
+            next_client = queue[self.FOG_NODES - 1]
             
             # Assign a fogNode to process client
             newBusyFogIndex, self.FreeFogNodes = SortedAssignFog(self.FreeFogNodes)
@@ -275,6 +298,8 @@ class Simulator():
                 print()
                 print("Arrival time of the last element in the queue:",
                       self.MM1[len(self.MM1)-1].arrival_time)
+                
+        return self.data, time
     
 
 if __name__ == '__main__':
@@ -283,6 +308,7 @@ if __name__ == '__main__':
     
     LOAD = 0.85
     SERVICE = 10.0
+    ARRIVAL = 0 # default arrival
     
     # SYSTEM PARAMS 
     BUFFER_SIZE = 3 #float('inf')
@@ -292,8 +318,8 @@ if __name__ == '__main__':
     SIM_TIME = 500000
 
     # instaciate simulator
-    s = Simulator(data, LOAD, SERVICE, BUFFER_SIZE, FOG_NODES, SIM_TIME)
+    s = Simulator(data, LOAD, SERVICE, ARRIVAL, BUFFER_SIZE, FOG_NODES, SIM_TIME)
     print_everything = True
-    s.simulate(print_everything)
+    data, time = s.simulate(print_everything)
     
 
