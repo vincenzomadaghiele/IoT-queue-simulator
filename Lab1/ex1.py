@@ -130,7 +130,7 @@ def departure(time, FES, queue):
     data.queueingDelay.append(time - client.arrival_time)
     users -= 1
     
-        
+    
     # see whether there are more clients to in the line
     if users > FOG_NODES - 1:
         # Next client is the first in the queue after the ones in the fog nodes
