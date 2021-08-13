@@ -78,10 +78,7 @@ class Simulator():
         # SYSTEM CONSTANTS
         self.LOAD = LOAD
         self.SERVICE = SERVICE
-        if ARRIVAL == 0:
-            self.ARRIVAL = SERVICE/LOAD
-        else:
-            self.ARRIVAL = ARRIVAL
+        self.ARRIVAL = ARRIVAL
         self.TYPE1 = 1
         
         # SYSTEM PARAMS 
@@ -233,9 +230,10 @@ class Simulator():
             self.users_in_buffer -= 1
             
     def simulate(self, print_everything = True):
+        
         # simulation time
         time = 0
-                
+        
         # schedule the first arrival at t=0
         self.FES.put((0, "arrival"))
         
