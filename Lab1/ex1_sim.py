@@ -2,9 +2,12 @@
 Exercise 1
 '''
 
+import random
 import numpy as np
 from matplotlib import pyplot as plt
 import simulator_class as sim
+
+random.seed(42)
 
 if __name__ == '__main__':
     
