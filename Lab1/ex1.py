@@ -3,11 +3,9 @@
 import random
 import numpy as np
 from matplotlib import pyplot as plt
-import seaborn as sns
-from queue import Queue, PriorityQueue
+from queue import PriorityQueue
 
 random.seed(42)
-
 
 def inititalize():
     global ARRIVAL, LOAD, BUFFER_SIZE, FOG_NODES, SIM_TIME, TYPE1, arrivals, users, MM1, FogBusyTime

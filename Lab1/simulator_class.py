@@ -9,8 +9,7 @@ Created on Fri Aug 13 16:01:42 2021
 import random
 import numpy as np
 from matplotlib import pyplot as plt
-import seaborn as sns
-from queue import Queue, PriorityQueue
+from queue import PriorityQueue
 
 class Measure:
     def __init__(self, Narr, Ndep, NAveraegUser, OldTimeEvent, AverageDelay, 
