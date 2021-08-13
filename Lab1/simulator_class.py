@@ -113,7 +113,7 @@ class Simulator():
         self.data = data
 
     # Event handling functions
-    def arrival(self, time, FES, queue):
+    def arrival(self, time, FES, queue, fog_assign = 'Sorted'):
         
         #print("Arrival no. ",data.arr+1," at time ",time," with ",users," users" )
         
@@ -139,10 +139,14 @@ class Simulator():
         # if the server is idle start the service
         if self.users <= self.FOG_NODES:
             # Assign a fogNode to process client
-            newBusyFogIndex, self.FreeFogNodes = SortedAssignFog(self.FreeFogNodes)
-            #newBusyFogIndex, FreeFogNodes = RandomAssignFog(FreeFogNodes)
-            #newBusyFogIndex, FreeFogNodes = RoundRobinAssignFog(FreeFogNodes, RRindex)
-            #newBusyFogIndex, FreeFogNodes = LeastCostlyAssignFog(FreeFogNodes, FogNodesCosts)
+            if fog_assign == 'Sorted':
+                newBusyFogIndex, self.FreeFogNodes = SortedAssignFog(self.FreeFogNodes)
+            elif fog_assign == 'RandomAssign':
+                newBusyFogIndex, self.FreeFogNodes = RandomAssignFog(self.FreeFogNodes)
+            elif fog_assign == 'RoundRobin':
+                newBusyFogIndex, self.FreeFogNodes = RoundRobinAssignFog(self.FreeFogNodes, self.RRindex)
+            elif fog_assign == 'LeastCostly':
+                newBusyFogIndex, self.FreeFogNodes = LeastCostlyAssignFog(self.FreeFogNodes, self.FogNodesCosts)
             client.fogNode = newBusyFogIndex
             self.RRindex = newBusyFogIndex
     
@@ -174,7 +178,7 @@ class Simulator():
             self.users -= 1
             queue.pop(-1)
     
-    def departure(self, time, FES, queue):
+    def departure(self, time, FES, queue, fog_assign = 'Sorted'):
     
         #print("Departure no. ",data.dep+1," at time ",time," with ",users," users" )
         
@@ -201,10 +205,14 @@ class Simulator():
             next_client = queue[self.FOG_NODES - 1]
             
             # Assign a fogNode to process client
-            newBusyFogIndex, self.FreeFogNodes = SortedAssignFog(self.FreeFogNodes)
-            #newBusyFogIndex, FreeFogNodes = RandomAssignFog(FreeFogNodes)
-            #newBusyFogIndex, FreeFogNodes = RoundRobinAssignFog(FreeFogNodes, RRindex)
-            #newBusyFogIndex, FreeFogNodes = LeastCostlyAssignFog(FreeFogNodes, FogNodesCosts)
+            if fog_assign == 'Sorted':
+                newBusyFogIndex, self.FreeFogNodes = SortedAssignFog(self.FreeFogNodes)
+            elif fog_assign == 'RandomAssign':
+                newBusyFogIndex, self.FreeFogNodes = RandomAssignFog(self.FreeFogNodes)
+            elif fog_assign == 'RoundRobin':
+                newBusyFogIndex, self.FreeFogNodes = RoundRobinAssignFog(self.FreeFogNodes, self.RRindex)
+            elif fog_assign == 'LeastCostly':
+                newBusyFogIndex, self.FreeFogNodes = LeastCostlyAssignFog(self.FreeFogNodes, self.FogNodesCosts)
             next_client.fogNode = newBusyFogIndex
             self.RRindex = newBusyFogIndex
     
@@ -229,7 +237,7 @@ class Simulator():
             self.data.oldTbuffer = time
             self.users_in_buffer -= 1
             
-    def simulate(self, print_everything = True):
+    def simulate(self, print_everything = True, fog_assign = 'Sorted'):
         
         # simulation time
         time = 0
@@ -242,10 +250,10 @@ class Simulator():
             (time, event_type) = self.FES.get()
         
             if event_type == "arrival":
-                self.arrival(time, self.FES, self.MM1)
+                self.arrival(time, self.FES, self.MM1, fog_assign)
         
             elif event_type == "departure":
-                self.departure(time, self.FES, self.MM1)
+                self.departure(time, self.FES, self.MM1, fog_assign)
         
         if print_everything:
             # print output data
@@ -258,9 +266,6 @@ class Simulator():
             print()
             print("Arrival rate:", self.data.arr/time)
             print("Departure rate:", self.data.dep/time)
-            print()
-            print("Average number of users:",self.data.ut/time)
-            print("Average delay:", self.data.delay/self.data.dep)
             print("Actual queue size:",len(self.MM1))
             print("Average service time:", self.data.serviceTime/self.data.dep)
             print()
