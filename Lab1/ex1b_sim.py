@@ -15,7 +15,7 @@ if __name__ == '__main__':
     tot_th_av_time_sys_list = []
     tot_pB_list = []
     LOADS = np.linspace(1e-5,20,100).tolist()
-    BUFFER_SIZES = [3,5,7]
+    BUFFER_SIZES = [3,5,10]
     #ARRIVALS = np.linspace(0.5,10,20)[::-1]
     
     for BUFFER_SIZE in BUFFER_SIZES:
