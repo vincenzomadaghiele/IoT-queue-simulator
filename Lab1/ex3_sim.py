@@ -29,7 +29,7 @@ if __name__ == '__main__':
         FOG_NODES = 2 # number of fog nodes
         
         # SIMULATION PARAMS
-        SIM_TIME = 50000
+        SIM_TIME = 500000
 
         # simulator
         s = sim.Simulator(data, LOAD, SERVICE, ARRIVAL, BUFFER_SIZE, FOG_NODES, SIM_TIME)
@@ -52,13 +52,13 @@ if __name__ == '__main__':
     plt.show()
 
     # Avg number of users vs Load    
-    plt.plot(np.array(load_list),np.array(load_list)/(1+np.array(load_list)),label='Theoretical values')
+    plt.plot(np.array(load_list),(np.array(load_list)/(1+np.array(load_list)))+2*((np.array(load_list)**2)/2)/(1+np.array(load_list)+0.5*np.array(load_list)**2),label='Theoretical values')
     plt.scatter(load_list,avg_users, s=7, c='r', label='Simulated values')
     plt.grid()
     plt.legend()
     plt.xlabel("Load")
     plt.ylabel("Avg number of users")
-    plt.ylim([0,1])
+    #plt.ylim([0,1])
     plt.show()
 
 
