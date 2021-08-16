@@ -15,12 +15,12 @@ if __name__ == '__main__':
     loss_pr=[]
     avg_users=[]
 
-    for SERVICE in range (1,240,2):
+    for SERVICE in range (1,380,2):
         
         # data storage object
         data = sim.Measure(0,0,0,0,0,0,0,0,0,0,[],[],0)
         
-        ARRIVAL = 12.0
+        ARRIVAL = 30.0
         LOAD = SERVICE/ARRIVAL
         #SERVICE = 10.0
         
@@ -29,7 +29,7 @@ if __name__ == '__main__':
         FOG_NODES = 1 # number of fog nodes
         
         # SIMULATION PARAMS
-        SIM_TIME = 500000
+        SIM_TIME = 300000
 
         # simulator
         s = sim.Simulator(data, LOAD, SERVICE, ARRIVAL, BUFFER_SIZE, FOG_NODES, SIM_TIME)
@@ -42,8 +42,9 @@ if __name__ == '__main__':
         avg_users.append(data.ut/time)
     
     # Loss probability vs Load
-    plt.plot(np.array(load_list),np.array(load_list)/(1+np.array(load_list)),label='Theoretical values')
-    plt.scatter(load_list,loss_pr, s=7, c='r', label='Simulated values')
+    plt.plot(np.array(load_list),((np.array(load_list)))/(1+np.array(load_list)),label='Theoretical values')
+    #plt.scatter(load_list,loss_pr, s=7, c='r', label='Simulated values')
+    plt.plot(load_list,loss_pr, label='Simulated values')
     plt.grid()
     plt.legend()
     plt.xlabel("Load")
@@ -53,7 +54,9 @@ if __name__ == '__main__':
 
     # Avg number of users vs Load    
     plt.plot(np.array(load_list),np.array(load_list)/(1+np.array(load_list)),label='Theoretical values')
-    plt.scatter(load_list,avg_users, s=7, c='r', label='Simulated values')
+    #plt.scatter(load_list,avg_users, s=7, c='r', label='Simulated values')
+    plt.plot(load_list,avg_users, label='Simulated values')
+
     plt.grid()
     plt.legend()
     plt.xlabel("Load")
