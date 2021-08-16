@@ -94,7 +94,7 @@ class Simulator():
         self.MM1 = [] # clients queue
         # the list of events in the form: (time, type)
         self.FES = PriorityQueue()
-  
+
         # FOG NODES
         # True: server is currently idle; False: server is currently busy
         self.FreeFogNodes = [True for fogNode in range(FOG_NODES)]
@@ -262,6 +262,7 @@ class Simulator():
             print("No. of arrivals =", self.data.arr)
             print("No. of departures =", self.data.dep)
             print("Load:", self.SERVICE/self.ARRIVAL)
+            print("Node assigment method:", fog_assign)
             print()
             print("Arrival rate:", self.data.arr/time)
             print("Departure rate:", self.data.dep/time)
@@ -299,8 +300,9 @@ class Simulator():
                 print()
                 print("Arrival time of the last element in the queue:",
                       self.MM1[len(self.MM1)-1].arrival_time)
+            print()
                 
-        return self.data, time, self.data.serviceTime, sum(self.FogBusyTime * self.FogNodesCosts)
+        return self.data, time, self.FogBusyTime, sum(self.FogBusyTime * self.FogNodesCosts)
     
 
 if __name__ == '__main__':

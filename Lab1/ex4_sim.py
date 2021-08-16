@@ -3,77 +3,75 @@ Exercise 4
 '''
 
 import numpy as np
-from matplotlib import pyplot as plt
 import simulator_class as sim
 
 np.random.seed(42)
 
 if __name__ == '__main__':
     
-    tot_busy = []
-    tot_op = []
-    LOADS = np.linspace(1e-5,13,100).tolist()
     ASSIGMENT_METHODS = ['Sorted','RandomAssign','RoundRobin','LeastCostly']
     
+    print('CONSTANT AVERAGE SERVICE RATE')
+    print('-'*40)
     for ASSIGMENT_METHOD in ASSIGMENT_METHODS:
+                            
+        # DATA OBJECT
+        data = sim.Measure(0,0,0,0,0,0,0,0,0,0,[],[],0)
         
-        load_list=[]
-        busy_times = []
-        op_cost = []
+        # SIMULATION PARAMETERS
+        #ARRIVAL = 12.0
+        LOAD = 5
+        SERVICE = 1000.0
+        ARRIVAL = SERVICE/LOAD
+        #LOAD = SERVICE/ARRIVAL
+        BUFFER_SIZE = 5
+        FOG_NODES = 5
+        SIM_TIME = 300000
+
+        # simulator
+        s = sim.Simulator(data, LOAD, SERVICE, ARRIVAL, 
+                          BUFFER_SIZE, FOG_NODES, SIM_TIME)
+        # insert constant service rate for all fog Nodes
+        s.FogNodesServTime = [SERVICE for fogNode in range(FOG_NODES)]
+        s.FogNodesCosts = [0.2, 0.4, 0.6, 0.8, 1]
+        print_everything = False
+        data, time, busy_time, operational_cost = s.simulate(print_everything, 
+                                                              ASSIGMENT_METHOD)
         
-        for LOAD in LOADS:
-            
-            # DATA OBJECT
-            data = sim.Measure(0,0,0,0,0,0,0,0,0,0,[],[],0)
-            
-            # SIMULATION PARAMETERS
-            #ARRIVAL = 12.0
-            SERVICE = 1000.0
-            ARRIVAL = SERVICE/LOAD
-            #LOAD = SERVICE/ARRIVAL
-            BUFFER_SIZE = 5
-            FOG_NODES = 1
-            SIM_TIME = 300000
-    
-            # simulator
-            s = sim.Simulator(data, LOAD, SERVICE, ARRIVAL, 
-                              BUFFER_SIZE, FOG_NODES, SIM_TIME)
-            print_everything = False
-            data, time, busy_time, operational_costs = s.simulate(print_everything, 
-                                                                  ASSIGMENT_METHOD)
-            
-            # cumulate statistics
-            load_list.append(LOAD)
-            busy_times.append(busy_time)
-            op_cost.append(operational_costs)
-            
-        tot_busy.append(busy_times)
-        tot_op.append(op_cost)
-    
-    colors = [['orangered','deepskyblue','lime','orange'],
-              ['maroon','navy','darkgreen','chocolate']]
-    # Loss probability vs Load
-    for i in range(len(tot_busy)):
-        plt.plot(load_list, tot_busy[i], '-', linewidth=0.7, c=colors[1][i], label=f'Method={ASSIGMENT_METHODS[i]}')
-    plt.grid()
-    plt.legend()
-    plt.xlabel("Load")
-    plt.ylabel("Busy time")
-    #plt.xlim([0,20])
-    #plt.ylim([0,1])
-    plt.title('Busy time vs Load')
-    plt.show()
-    
-    # Avg time spent in system vs Load
-    for i in range(len(tot_op)):
-        plt.plot(load_list, tot_op[i], '.-', linewidth=0.5, c=colors[1][i], label=f'Method={ASSIGMENT_METHODS[i]}')
-    plt.grid()
-    plt.legend()
-    plt.xlabel("Load")
-    plt.ylabel("Operational costs")
-    #plt.xlim([0,20])
-    plt.title('Operational costs vs Load')
-    plt.show()
+        print(f'Assignment method: {ASSIGMENT_METHOD}')
+        print(f'Costs: {s.FogNodesCosts}')
+        print(f'Busy times: {busy_time/time}')
+        print(f'Operational cost: {operational_cost}')
+        print(f'Average queueing delay: {data.delay/data.dep}')
+        print()
+    print()
+    print('DIFFERENT AVERAGE SERVICE RATE')
+    print('-'*40)
+    for ASSIGMENT_METHOD in ASSIGMENT_METHODS:
+                            
+        # DATA OBJECT
+        data = sim.Measure(0,0,0,0,0,0,0,0,0,0,[],[],0)
+        
+        # SIMULATION PARAMETERS
+        #ARRIVAL = 12.0
+        LOAD = 5
+        SERVICE = 1000.0
+        ARRIVAL = SERVICE/LOAD
+        #LOAD = SERVICE/ARRIVAL
+        BUFFER_SIZE = 5
+        FOG_NODES = 5
+        SIM_TIME = 300000
 
-
-
+        # simulator
+        s = sim.Simulator(data, LOAD, SERVICE, ARRIVAL, 
+                          BUFFER_SIZE, FOG_NODES, SIM_TIME)
+        print_everything = False
+        data, time, busy_time, operational_cost = s.simulate(print_everything, 
+                                                              ASSIGMENT_METHOD)
+        
+        print(f'Assignment method: {ASSIGMENT_METHOD}')
+        print(f'Costs: {s.FogNodesCosts}')
+        print(f'Busy times: {busy_time/time}')
+        print(f'Operational cost: {operational_cost}')
+        print(f'Average queueing delay: {data.delay/data.dep}')
+        print()
