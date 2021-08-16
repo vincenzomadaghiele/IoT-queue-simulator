@@ -153,12 +153,10 @@ class Simulator():
             if distribution == 'Exponential':
                 service_time = random.expovariate(1.0/fogService)
             elif distribution == 'Uniform':
-                service_time = 1 + random.uniform(0, fogService)
+                var = 1000
+                service_time = fogService + random.uniform(0, var)
             elif distribution == 'Constant':
                 service_time = fogService
-            elif distribution == 'Gaussian':
-                var = 5
-                service_time = np.random.normal(fogService, var)
     
             # schedule when the client will finish the server
             self.FES.put((time + service_time, "departure"))
@@ -226,12 +224,10 @@ class Simulator():
             if distribution == 'Exponential':
                 service_time = random.expovariate(1.0/fogService)
             elif distribution == 'Uniform':
-                service_time = 1 + random.uniform(0, fogService)
+                var = 1000
+                service_time = fogService + random.uniform(0, var)
             elif distribution == 'Constant':
                 service_time = fogService
-            elif distribution == 'Gaussian':
-                var = 5
-                service_time = np.random.normal(fogService, var)
     
             # schedule when the client will finish the server
             self.FES.put((time + service_time, "departure"))
