@@ -10,22 +10,16 @@ np.random.seed(42)
 
 if __name__ == '__main__':
     
-    tot_loss_pr = [] 
-    tot_time_sys = []
-    tot_th_av_time_sys_list = []
-    tot_pB_list = []
+    tot_busy = []
+    tot_op = []
     LOADS = np.linspace(1e-5,13,100).tolist()
-    BUFFER_SIZES = [3,5,10]
-    ASSIGMENT_METHODS = ['','','','']
-    #ARRIVALS = np.linspace(0.5,10,20)[::-1]
+    ASSIGMENT_METHODS = ['Sorted','RandomAssign','RoundRobin','LeastCostly']
     
-    for BUFFER_SIZE in BUFFER_SIZES:
+    for ASSIGMENT_METHOD in ASSIGMENT_METHODS:
         
         load_list=[]
-        loss_pr = []
-        time_sys = []
-        pB_list = []
-        th_av_time_sys_list = []
+        busy_times = []
+        op_cost = []
         
         for LOAD in LOADS:
             
@@ -37,6 +31,7 @@ if __name__ == '__main__':
             SERVICE = 1000.0
             ARRIVAL = SERVICE/LOAD
             #LOAD = SERVICE/ARRIVAL
+            BUFFER_SIZE = 5
             FOG_NODES = 1
             SIM_TIME = 300000
     
@@ -44,68 +39,40 @@ if __name__ == '__main__':
             s = sim.Simulator(data, LOAD, SERVICE, ARRIVAL, 
                               BUFFER_SIZE, FOG_NODES, SIM_TIME)
             print_everything = False
-            data, time, busy_time, operational_costs = s.simulate(print_everything)
+            data, time, busy_time, operational_costs = s.simulate(print_everything, 
+                                                                  ASSIGMENT_METHOD)
             
             # cumulate statistics
             load_list.append(LOAD)
-            loss_pr.append(data.toCloud/data.arr)
-            time_sys.append(data.delay/data.dep)
+            busy_times.append(busy_time)
+            op_cost.append(operational_costs)
             
-            # theoretical value for average time in the system
-            th_av_num_us = 0
-            for i in range(1,BUFFER_SIZE+FOG_NODES+1):
-                pi = ((1 - LOAD) / (1 - LOAD**(BUFFER_SIZE+FOG_NODES+1))) * (LOAD**i)
-                th_av_num_us += i * pi
-            pB = ((1 - LOAD) / (1 - LOAD**(BUFFER_SIZE+FOG_NODES+1))) * (LOAD**(BUFFER_SIZE+FOG_NODES))
-            exp_lambd = (1/ARRIVAL) - ((1/ARRIVAL)*pB)
-            th_av_time_sys = th_av_num_us / exp_lambd
-            pB_list.append(pB)
-            th_av_time_sys_list.append(th_av_time_sys)
-            
-        tot_loss_pr.append(loss_pr)
-        tot_time_sys.append(time_sys)
-        tot_th_av_time_sys_list.append(th_av_time_sys_list)
-        tot_pB_list.append(pB_list)
+        tot_busy.append(busy_times)
+        tot_op.append(op_cost)
     
-    colors = [['orangered','deepskyblue','lime'],
-              ['maroon','navy','darkgreen']]
+    colors = [['orangered','deepskyblue','lime','orange'],
+              ['maroon','navy','darkgreen','chocolate']]
     # Loss probability vs Load
-    for i in range(len(tot_loss_pr)):
-        plt.plot(load_list, tot_loss_pr[i], '-', linewidth=0.7, c=colors[1][i], label=f'Simluated B={BUFFER_SIZES[i]}')
-        #plt.plot(load_list, tot_pB_list[i], linewidth=0.5, c=colors[0][i], label=f'Theoretical B={BUFFER_SIZES[i]}')
+    for i in range(len(tot_busy)):
+        plt.plot(load_list, tot_busy[i], '-', linewidth=0.7, c=colors[1][i], label=f'Method={ASSIGMENT_METHODS[i]}')
     plt.grid()
     plt.legend()
     plt.xlabel("Load")
-    plt.ylabel("Loss probability")
-    plt.xlim([0,20])
-    plt.ylim([0,1])
-    plt.title('Loss probability vs Load')
+    plt.ylabel("Busy time")
+    #plt.xlim([0,20])
+    #plt.ylim([0,1])
+    plt.title('Busy time vs Load')
     plt.show()
-    
-    # Loss probability vs Load (zoomed)
-    for i in range(len(tot_loss_pr)):
-        plt.plot(load_list, tot_loss_pr[i], '.-', linewidth=0.5, c=colors[1][i], label=f'Simluated B={BUFFER_SIZES[i]}')
-        plt.plot(load_list, tot_pB_list[i], linewidth=0.5, c=colors[0][i], label=f'Theoretical B={BUFFER_SIZES[i]}')
-    plt.grid()
-    plt.legend()
-    plt.xlabel("Load")
-    plt.ylabel("Loss probability")
-    plt.xlim([0,3])
-    plt.ylim([0,1])
-    plt.title('Loss probability vs Load (zoomed)')
-    plt.show()
-
     
     # Avg time spent in system vs Load
-    for i in range(len(tot_time_sys)):
-        plt.plot(load_list, tot_time_sys[i], '.-', linewidth=0.5, c=colors[1][i], label=f'Simulated B={BUFFER_SIZES[i]}')
-        plt.plot(load_list, tot_th_av_time_sys_list[i], linewidth=1, c=colors[0][i], label=f'Theoretical B={BUFFER_SIZES[i]}')
+    for i in range(len(tot_op)):
+        plt.plot(load_list, tot_op[i], '.-', linewidth=0.5, c=colors[1][i], label=f'Method={ASSIGMENT_METHODS[i]}')
     plt.grid()
     plt.legend()
     plt.xlabel("Load")
-    plt.ylabel("Avgerage time [ms]")
+    plt.ylabel("Operational costs")
     #plt.xlim([0,20])
-    plt.title('Avg time spent in system vs Load')
+    plt.title('Operational costs vs Load')
     plt.show()
 
 
