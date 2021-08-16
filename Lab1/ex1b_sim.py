@@ -10,12 +10,13 @@ np.random.seed(42)
 
 if __name__ == '__main__':
     
-    tot_loss_pr = []
+    tot_loss_pr = [] 
     tot_time_sys = []
     tot_th_av_time_sys_list = []
     tot_pB_list = []
-    LOADS = np.linspace(1e-5,20,100).tolist()
-    BUFFER_SIZES = [3,5,7]
+    LOADS = np.linspace(1e-5,13,100).tolist()
+    BUFFER_SIZES = [3,5,10]
+    #ARRIVALS = np.linspace(0.5,10,20)[::-1]
     
     for BUFFER_SIZE in BUFFER_SIZES:
         
@@ -36,7 +37,7 @@ if __name__ == '__main__':
             ARRIVAL = SERVICE/LOAD
             #LOAD = SERVICE/ARRIVAL
             FOG_NODES = 1
-            SIM_TIME = 500000
+            SIM_TIME = 300000
     
             # simulator
             s = sim.Simulator(data, LOAD, SERVICE, ARRIVAL, 
@@ -101,8 +102,8 @@ if __name__ == '__main__':
     plt.grid()
     plt.legend()
     plt.xlabel("Load")
-    plt.ylabel("Avg time in system")
-    plt.xlim([0,20])
+    plt.ylabel("Avgerage time [ms]")
+    #plt.xlim([0,20])
     plt.title('Avg time spent in system vs Load')
     plt.show()
 
