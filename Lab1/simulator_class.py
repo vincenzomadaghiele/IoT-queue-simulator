@@ -300,7 +300,7 @@ class Simulator():
                 print("Arrival time of the last element in the queue:",
                       self.MM1[len(self.MM1)-1].arrival_time)
                 
-        return self.data, time
+        return self.data, time, self.data.serviceTime, sum(self.FogBusyTime * self.FogNodesCosts)
     
 
 if __name__ == '__main__':

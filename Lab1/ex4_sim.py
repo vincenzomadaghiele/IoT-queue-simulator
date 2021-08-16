@@ -1,5 +1,5 @@
 '''
-Exercise 1b
+Exercise 4
 '''
 
 import numpy as np
@@ -16,6 +16,7 @@ if __name__ == '__main__':
     tot_pB_list = []
     LOADS = np.linspace(1e-5,13,100).tolist()
     BUFFER_SIZES = [3,5,10]
+    ASSIGMENT_METHODS = ['','','','']
     #ARRIVALS = np.linspace(0.5,10,20)[::-1]
     
     for BUFFER_SIZE in BUFFER_SIZES:
@@ -43,7 +44,7 @@ if __name__ == '__main__':
             s = sim.Simulator(data, LOAD, SERVICE, ARRIVAL, 
                               BUFFER_SIZE, FOG_NODES, SIM_TIME)
             print_everything = False
-            data, time, _, _ = s.simulate(print_everything)
+            data, time, busy_time, operational_costs = s.simulate(print_everything)
             
             # cumulate statistics
             load_list.append(LOAD)

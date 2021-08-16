@@ -34,7 +34,7 @@ if __name__ == '__main__':
         # simulator
         s = sim.Simulator(data, LOAD, SERVICE, ARRIVAL, BUFFER_SIZE, FOG_NODES, SIM_TIME)
         print_everything = False
-        data, time = s.simulate(print_everything)
+        data, time, _, _ = s.simulate(print_everything)
         
         # cumulate statistics
         load_list.append(LOAD)
