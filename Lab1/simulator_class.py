@@ -70,7 +70,6 @@ def LeastCostlyAssignFog(FreeFogNodes, costs):
     FreeFogNodes[newBusyFogIndex] = False
     return newBusyFogIndex, FreeFogNodes
 
-
 class Simulator():
     def __init__(self, data, LOAD = 0.85, SERVICE = 10.0, ARRIVAL = 0,
                  BUFFER_SIZE = 3, FOG_NODES = 5, SIM_TIME = 500000):
