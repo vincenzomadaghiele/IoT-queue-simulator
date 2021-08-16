@@ -13,11 +13,9 @@ if __name__ == '__main__':
     NUM_SIMULATIONS = 10
     
     # SIMULATION PARAMETERS
-    #ARRIVAL = 12.0
     LOAD = 2
     SERVICE = 1000.0
     ARRIVAL = SERVICE/LOAD
-    #LOAD = SERVICE/ARRIVAL
     BUFFER_SIZE = 5
     FOG_NODES = 5
     SIM_TIME = 300000
@@ -73,10 +71,16 @@ if __name__ == '__main__':
             
             # DATA OBJECT
             data = sim.Measure(0,0,0,0,0,0,0,0,0,0,[],[],0)
-                
+            
             # simulator
             s = sim.Simulator(data, LOAD, SERVICE, ARRIVAL, 
                               BUFFER_SIZE, FOG_NODES, SIM_TIME)
+            
+            # insert constant service rate for all fog Nodes
+            s.FogNodesServTime = [800,900,1000,1100,1200]
+            s.FogNodesCosts = [1, 0.8, 0.6, 0.4, 0.2]
+            
+            # simulate
             print_everything = False
             data, time, busy_time, operational_cost = s.simulate(print_everything, 
                                                                   ASSIGMENT_METHOD)

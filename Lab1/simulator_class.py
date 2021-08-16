@@ -1,10 +1,6 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-"""
-Created on Fri Aug 13 16:01:42 2021
-
-@author: vincenzomadaghiele
-"""
+'''
+Queueing system simmulator class
+'''
 
 import random
 import numpy as np
@@ -112,7 +108,8 @@ class Simulator():
         self.data = data
 
     # Event handling functions
-    def arrival(self, time, FES, queue, fog_assign = 'Sorted'):
+    def arrival(self, time, FES, queue, fog_assign = 'Sorted', 
+                distribution = 'Exponential'):
         
         #print("Arrival no. ",data.arr+1," at time ",time," with ",users," users" )
         
@@ -153,9 +150,15 @@ class Simulator():
             fogService = self.FogNodesServTime[client.fogNode]
     
             # sample the service time
-            #service_time = random.expovariate(1.0/SERVICE)
-            #service_time = 1 + random.uniform(0, SEVICE_TIME)
-            service_time = random.expovariate(1.0/fogService)
+            if distribution == 'Exponential':
+                service_time = random.expovariate(1.0/fogService)
+            elif distribution == 'Uniform':
+                service_time = 1 + random.uniform(0, fogService)
+            elif distribution == 'Constant':
+                service_time = fogService
+            elif distribution == 'Gaussian':
+                var = 5
+                service_time = np.random.normal(fogService, var)
     
             # schedule when the client will finish the server
             self.FES.put((time + service_time, "departure"))
@@ -177,7 +180,8 @@ class Simulator():
             self.users -= 1
             queue.pop(-1)
     
-    def departure(self, time, FES, queue, fog_assign = 'Sorted'):
+    def departure(self, time, FES, queue, fog_assign = 'Sorted',
+                  distribution = 'Exponential'):
     
         #print("Departure no. ",data.dep+1," at time ",time," with ",users," users" )
         
@@ -219,8 +223,15 @@ class Simulator():
             fogService = self.FogNodesServTime[client.fogNode]
     
             # sample the service time
-            #service_time = random.expovariate(1.0/SERVICE)
-            service_time = random.expovariate(1.0/fogService)
+            if distribution == 'Exponential':
+                service_time = random.expovariate(1.0/fogService)
+            elif distribution == 'Uniform':
+                service_time = 1 + random.uniform(0, fogService)
+            elif distribution == 'Constant':
+                service_time = fogService
+            elif distribution == 'Gaussian':
+                var = 5
+                service_time = np.random.normal(fogService, var)
     
             # schedule when the client will finish the server
             self.FES.put((time + service_time, "departure"))
@@ -236,7 +247,8 @@ class Simulator():
             self.data.oldTbuffer = time
             self.users_in_buffer -= 1
             
-    def simulate(self, print_everything = True, fog_assign = 'Sorted'):
+    def simulate(self, print_everything = True, fog_assign = 'Sorted',
+                 distribution = 'Exponential'):
         
         # simulation time
         time = 0
@@ -249,10 +261,10 @@ class Simulator():
             (time, event_type) = self.FES.get()
         
             if event_type == "arrival":
-                self.arrival(time, self.FES, self.MM1, fog_assign)
+                self.arrival(time, self.FES, self.MM1, fog_assign, distribution)
         
             elif event_type == "departure":
-                self.departure(time, self.FES, self.MM1, fog_assign)
+                self.departure(time, self.FES, self.MM1, fog_assign, distribution)
         
         if print_everything:
             # print output data
@@ -263,6 +275,7 @@ class Simulator():
             print("No. of departures =", self.data.dep)
             print("Load:", self.SERVICE/self.ARRIVAL)
             print("Node assigment method:", fog_assign)
+            print("Distribution of service time:", distribution)
             print()
             print("Arrival rate:", self.data.arr/time)
             print("Departure rate:", self.data.dep/time)
@@ -301,7 +314,7 @@ class Simulator():
                 print("Arrival time of the last element in the queue:",
                       self.MM1[len(self.MM1)-1].arrival_time)
             print()
-                
+            
         return self.data, time, self.FogBusyTime, sum(self.FogBusyTime * self.FogNodesCosts)
     
 

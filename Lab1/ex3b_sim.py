@@ -14,7 +14,6 @@ if __name__ == '__main__':
     tot_time_sys = []
     tot_th_av_time_sys_list = []
     tot_pB_list = []
-    LOADS = np.linspace(1e-5,13,100).tolist()
     FOG_NODES_VALS = [1,2,4,5]
     BUFFER_SIZES = np.linspace(0,29,30).tolist()
     
@@ -36,7 +35,6 @@ if __name__ == '__main__':
             LOAD = 4
             SERVICE = 1000.0
             ARRIVAL = SERVICE/LOAD
-            #FOG_NODES = 2
             SIM_TIME = 300000
     
             # simulator
@@ -54,6 +52,7 @@ if __name__ == '__main__':
         tot_time_sys.append(time_sys)
         tot_th_av_time_sys_list.append(th_av_time_sys_list)
         tot_pB_list.append(pB_list)
+        
         
     colors = [['orangered','deepskyblue','lime','orange'],
               ['maroon','navy','darkgreen','chocolate']]
