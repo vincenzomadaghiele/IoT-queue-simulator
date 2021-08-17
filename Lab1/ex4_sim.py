@@ -77,7 +77,7 @@ if __name__ == '__main__':
                               BUFFER_SIZE, FOG_NODES, SIM_TIME)
             
             # insert constant service rate for all fog Nodes
-            s.FogNodesServTime = [800,900,1000,1100,1200]
+            s.FogNodesServTime = [500,750,1000,1250,1500]
             s.FogNodesCosts = [1, 0.8, 0.6, 0.4, 0.2]
             
             # simulate
