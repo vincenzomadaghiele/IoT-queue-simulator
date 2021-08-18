@@ -7,6 +7,8 @@ import numpy as np
 from matplotlib import pyplot as plt
 from queue import PriorityQueue
 
+random.seed(42)
+
 class Measure:
     def __init__(self, Narr, Ndep, NAveraegUser, OldTimeEvent, AverageDelay, 
                  bufferOccupancy, oldTbuffer, ToCloud, NlocallyPreprocessed, 
@@ -368,7 +370,8 @@ class Simulator():
         
         # do whatever we need to do when clients go away
         self.data_cloud.delay += (time - client.arrival_time_cloud)
-        self.data.queueingDelay.append(time - client.arrival_time_cloud)
+        self.data_cloud.queueingDelay.append(time - client.arrival_time_cloud)
+        self.data_cloud.waitingDelay.append(time - client.arrival_time_cloud - client.service_time_cloud)
         self.users_cloud -= 1
         
         # free fogNode
@@ -415,7 +418,7 @@ class Simulator():
             
             # Update stats
             next_client.service_time_cloud = service_time
-            self.data_cloud.waitingDelay.append(time - next_client.arrival_time_cloud)
+            #self.data_cloud.waitingDelay.append(time - next_client.arrival_time_cloud)
             self.CloudServerBusyTime[next_client.cloudServer] += next_client.service_time_cloud
             
             # update buffer counter
@@ -497,7 +500,7 @@ class Simulator():
                       self.MM1[len(self.MM1)-1].arrival_time)
             print()
             
-        return self.data, time, self.FogBusyTime, sum(self.FogBusyTime * self.FogNodesCosts)
+        return self.data, self.data_cloud, time, self.FogBusyTime, sum(self.FogBusyTime * self.FogNodesCosts)
     
 
 if __name__ == '__main__':
@@ -525,6 +528,6 @@ if __name__ == '__main__':
     # instaciate simulator
     s = Simulator(data, data_cloud, LOAD, SERVICE, ARRIVAL, BUFFER_SIZE, FOG_NODES, SIM_TIME, f, CLOUD_SERVERS, CLOUD_BUFFER_SIZE, SERVICE_CLOUD)
     print_everything = True
-    data, time, _, _ = s.simulate(print_everything)
+    data, data_cloud, time, _, _ = s.simulate(print_everything)
     
 
