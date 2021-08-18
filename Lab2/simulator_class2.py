@@ -158,7 +158,7 @@ class Simulator():
             pkt_type='A'
         else:
             pkt_type='B'
-        client = Client(pkt_type,time,0,None,False)
+        client = Client(pkt_type,time,0,None,False,False,0,0)
     
         # insert the record in the queue
         queue.append(client)
@@ -296,10 +296,10 @@ class Simulator():
     
         self.users_cloud += 1
             
-        client=queue_cloud.pop(0)
-    
+        
         # if the server is idle start the service
         if self.users_cloud <= self.CLOUD_SERVERS:
+            client=queue_cloud[self.users_cloud-1]
             # Assign a fogNode to process client
             if server_assign == 'Sorted':
                 newBusyServerIndex, self.FreeCloudServers = SortedAssignFog(self.FreeCloudServers)
@@ -345,7 +345,7 @@ class Simulator():
             self.data_cloud.oldTbuffer = time
             self.users_in_buffer_cloud += 1
     
-        elif self.users > self.CLOUD_BUFFER_SIZE + self.CLOUD_SERVERS:
+        elif self.users_cloud > self.CLOUD_BUFFER_SIZE + self.CLOUD_SERVERS:
             # if buffer is full drop pkt 
             self.data_cloud.toCloud += 1 #this are dropped packets
             # remove client from queue
@@ -364,7 +364,7 @@ class Simulator():
         self.data_cloud.locallyPreprocessed += 1
         
         # get the first element from the queue
-        client = queue.pop(0)
+        client = queue_cloud.pop(0)
         
         # do whatever we need to do when clients go away
         self.data_cloud.delay += (time - client.arrival_time_cloud)
@@ -375,9 +375,9 @@ class Simulator():
         self.FreeCloudServers[client.cloudServer] = True
         
         # see whether there are more clients to in the line
-        if self.users > self.CLOUD_SERVERS - 1:
+        if self.users_cloud > self.CLOUD_SERVERS - 1:
             # Next client is the first in the queue after the ones in the fog nodes
-            next_client = queue[self.CLOUD_SERVERS - 1]
+            next_client = queue_cloud[self.CLOUD_SERVERS - 1]
             
             # Assign a fogNode to process client
             if server_assign == 'Sorted':
@@ -437,10 +437,10 @@ class Simulator():
             (time, event_type) = self.FES.get()
         
             if event_type == "arrival":
-                self.arrival(time, self.FES, self.MM1, fog_assign, distribution)
+                self.arrival(time, self.FES, self.MM1, self.MM1_cloud, fog_assign, distribution)
         
             elif event_type == "departure":
-                self.departure(time, self.FES, self.MM1, fog_assign, distribution)
+                self.departure(time, self.FES, self.MM1, self.MM1_cloud, fog_assign, distribution)
 
             elif event_type == "arrival_cloud":
                 self.arrival_cloud(time, self.FES, self.MM1_cloud, fog_assign, distribution)
