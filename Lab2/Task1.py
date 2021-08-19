@@ -113,6 +113,7 @@ if __name__ == '__main__':
     plt.grid()
     plt.xlabel("Packets")
     plt.ylabel("Waiting Delay [ms]")
+    plt.title('Waiting delay over one simulation')
     plt.show()
 
     # Plot xk coefficent
@@ -126,6 +127,7 @@ if __name__ == '__main__':
     plt.legend()
     plt.xlabel("Packets")
     plt.ylabel("xk")
+    plt.title('Average xk averaged over 100 simulations')
     plt.show()
 
 
