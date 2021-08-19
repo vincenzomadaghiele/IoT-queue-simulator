@@ -19,7 +19,7 @@ if __name__ == '__main__':
 
     # SYSTEM PARAMS 
     BUFFER_SIZE = 25
-    FOG_NODES = 1 
+    FOG_NODES = 1
     f = 0.7
     SERVICE_CLOUD = 50
     CLOUD_BUFFER_SIZE = 100
@@ -102,8 +102,8 @@ if __name__ == '__main__':
     
     # plot last simulation delay
     plt.fill_between(np.linspace(0,n,n-1),
-                     (np.array(rolling_mean[:n])+np.array(rolling_var[:n])),
-                     (np.array(rolling_mean[:n])-np.array(rolling_var[:n])),
+                     (np.array(rolling_mean[:n])+2*np.array(rolling_var[:n])),
+                     (np.array(rolling_mean[:n])-2*np.array(rolling_var[:n])),
                      alpha=0.5, color='lightcoral', label='Rolling standard deviation')
     plt.plot(data_cloud.waitingDelay[0:n], label='Waiting delay')
     plt.plot(rolling_mean[:n], '--', label='Rolling mean', c='red')
