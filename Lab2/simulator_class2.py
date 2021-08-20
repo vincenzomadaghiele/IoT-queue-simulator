@@ -450,12 +450,12 @@ class Simulator():
         # simulate until the simulated time reaches a constant
         while time < self.SIM_TIME:
             
-            if self.f_int_arr:
-                self.ARRIVAL = self.ARRIVAL_CONST * self.f_int_arr(time)
-            if self.f_f:
-                self.f = self.f_f(time)
-            
             (time, event_type) = self.FES.get()
+            
+            if self.f_int_arr:
+                self.ARRIVAL = float(self.ARRIVAL_CONST * self.f_int_arr(time))
+            if self.f_f:
+                self.f = float(self.f_f(time))
         
             if event_type == "arrival":
                 self.arrival(time, self.FES, self.MM1, self.MM1_cloud, fog_assign, distribution)

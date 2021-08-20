@@ -14,7 +14,7 @@ np.random.seed(42)
 if __name__ == '__main__':
     
     # define interest points
-    f_x_points = np.array([0,5,10,12,18,20,24]) * 3600000
+    f_x_points = np.array([0,5,10,12,18,20,24.5]) * 3600000
     f_y_points = [0.8,0.6,0.2,0.4,0.25,0.45,0.8]
     # interpolate points
     f_av_arrival = interp1d(f_x_points, f_y_points, kind='quadratic')
@@ -33,7 +33,7 @@ if __name__ == '__main__':
     plt.show()
     
     # define interest points
-    f_x_points = np.array([0,2,4,11,13,15,18,20,24]) * 3600000
+    f_x_points = np.array([0,2,4,11,13,15,18,20,24.5]) * 3600000
     f_y_points = [0.1,0.05,0.2,0.85,0.85,0.7,0.6,0.5,0.1]
     # interpolate points
     f_f = interp1d(f_x_points, f_y_points, kind='quadratic')
@@ -88,7 +88,6 @@ if __name__ == '__main__':
         print(f'Average number of users = {(data.ut + data_cloud.ut)/time}')
         
     # Average queueing delay with progressively faster MDC service
-    #plt.plot(SERVICE_TIMES, tot_queueing_delay, label='Queueing delay')
     plt.plot(data_cloud.departureTimes, data_cloud.timeSystem)
     plt.grid()
     plt.legend()
