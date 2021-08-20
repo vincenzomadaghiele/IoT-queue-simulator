@@ -23,7 +23,7 @@ if __name__ == '__main__':
     f = 0.7
     
     SERVICE_CLOUD = 50
-    CLOUD_BUFFER_SIZE = 10
+    CLOUD_BUFFER_SIZE = 8
     CLOUD_SERVERS = 1
     
     # SIMULATION PARAMS
@@ -32,8 +32,8 @@ if __name__ == '__main__':
     
     time_tot=[]
     lost_tot=[]
-    num_sim=1
-    BUFFERS=np.linspace(0,50,51)
+    num_sim=50
+    BUFFERS=np.linspace(0,20,21)
     for seed in range(num_sim):
         random.seed(seed)
         np.random.seed(seed)
@@ -71,14 +71,14 @@ if __name__ == '__main__':
     plt.plot(BUFFERS, T)
     plt.grid()
     plt.xlabel("MDC buffer size")
-    plt.ylabel("Average waiting delay")
-    plt.title("Average waiting delay for the whole system")
+    plt.ylabel("Average queuing delay")
+    plt.title("Average queuing delay for the whole system")
     plt.show()
 
     plt.plot(BUFFERS, L)
     plt.grid()
     plt.xlabel("MDC buffer size")
     plt.ylabel("Loss probability")
-    plt.ylim([0,1])
+    #plt.ylim([0,1])
     plt.title("Probability to lose a packet")
     plt.show()
