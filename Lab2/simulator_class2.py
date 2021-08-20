@@ -10,9 +10,10 @@ from queue import PriorityQueue
 random.seed(42)
 
 class Measure:
-    def __init__(self, Narr, Ndep, NAveraegUser, OldTimeEvent, AverageDelay, 
-                 bufferOccupancy, oldTbuffer, ToCloud, NlocallyPreprocessed, 
-                 ServTime, QueueingDelay, WaitingDelay, BusyTime):
+    def __init__(self, Narr=0, Ndep=0, NAveraegUser=0, OldTimeEvent=0, AverageDelay=0, 
+                 bufferOccupancy=0, oldTbuffer=0, ToCloud=0, NlocallyPreprocessed=0, 
+                 ServTime=0, QueueingDelay=[], WaitingDelay=[], departureTimes=[],
+                 timeSystem = []):
         self.arr = Narr # number of arrivals
         self.dep = Ndep # number of departures
         self.ut = NAveraegUser
@@ -26,6 +27,8 @@ class Measure:
         self.serviceTime = ServTime
         self.queueingDelay = QueueingDelay
         self.waitingDelay = WaitingDelay
+        self.departureTimes = departureTimes
+        self.timeSystem = timeSystem
 
 class Client:
     def __init__(self,type,arrival_time,service_time,fogNode,isPreProcessed,cloudServer=False,service_time_cloud=0, arrival_time_cloud=0):
@@ -74,15 +77,22 @@ def LeastCostlyAssignFog(FreeFogNodes, costs):
 
 class Simulator():
     def __init__(self, data, data_cloud, LOAD = 0.85, SERVICE = 10.0, ARRIVAL = 0, 
-                 BUFFER_SIZE = 3, FOG_NODES = 5, SIM_TIME = 500000, f=0.7, CLOUD_SERVERS=5, CLOUD_BUFFER_SIZE=3, SERVICE_CLOUD=5):
+                 BUFFER_SIZE = 3, FOG_NODES = 5, SIM_TIME = 500000, f=0.7, 
+                 CLOUD_SERVERS=5, CLOUD_BUFFER_SIZE=3, SERVICE_CLOUD=5, 
+                 f_int_arr = None, f_f = None):
         
         # SYSTEM CONSTANTS
         self.LOAD = LOAD
         self.SERVICE = SERVICE
         self.ARRIVAL = ARRIVAL
-        self.f = f
+        self.ARRIVAL_CONST = ARRIVAL
+        self.f = f 
         self.SERVICE_CLOUD=SERVICE_CLOUD
         self.prop_delay= 2
+        
+        # TIME-VARYING FUNCTIONS
+        self.f_int_arr = f_int_arr
+        self.f_f = f_f
         
         # SYSTEM PARAMS 
         self.BUFFER_SIZE = BUFFER_SIZE
@@ -372,6 +382,8 @@ class Simulator():
         self.data_cloud.delay += (time - client.arrival_time_cloud)
         self.data_cloud.queueingDelay.append(time - client.arrival_time_cloud)
         self.data_cloud.waitingDelay.append(time - client.arrival_time_cloud - client.service_time_cloud)
+        self.data_cloud.departureTimes.append(time)
+        self.data_cloud.timeSystem.append(time - client.arrival_time)
         self.users_cloud -= 1
         
         # free fogNode
@@ -437,6 +449,12 @@ class Simulator():
         
         # simulate until the simulated time reaches a constant
         while time < self.SIM_TIME:
+            
+            if self.f_int_arr:
+                self.ARRIVAL = self.ARRIVAL_CONST * self.f_int_arr(time)
+            if self.f_f:
+                self.f = self.f_f(time)
+            
             (time, event_type) = self.FES.get()
         
             if event_type == "arrival":
@@ -505,8 +523,8 @@ class Simulator():
 
 if __name__ == '__main__':
     
-    data = Measure(0,0,0,0,0,0,0,0,0,0,[],[],0)
-    data_cloud = Measure(0,0,0,0,0,0,0,0,0,0,[],[],0)
+    data = Measure(0,0,0,0,0,0,0,0,0,0,[],[],[])
+    data_cloud = Measure(0,0,0,0,0,0,0,0,0,0,[],[],[])
     
     LOAD = 0.85
     SERVICE = 10.0

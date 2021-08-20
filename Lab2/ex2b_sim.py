@@ -38,8 +38,8 @@ if __name__ == '__main__':
         time_sys=[]
         lost_pkt=[]
         for CLOUD_BUFFER_SIZE in BUFFERS:
-            data = sim.Measure(0,0,0,0,0,0,0,0,0,0,[],[],0)
-            data_cloud = sim.Measure(0,0,0,0,0,0,0,0,0,0,[],[],0)
+            data = sim.Measure(0,0,0,0,0,0,0,0,0,0,[],[],[])
+            data_cloud = sim.Measure(0,0,0,0,0,0,0,0,0,0,[],[],[])
 
             # simulator
             s = sim.Simulator(data, data_cloud, LOAD, SERVICE, ARRIVAL, BUFFER_SIZE, 

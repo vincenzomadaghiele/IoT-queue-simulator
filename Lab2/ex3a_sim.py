@@ -39,8 +39,8 @@ if __name__ == '__main__':
             SIM_TIME = 300000
             
             # data storage object
-            data = sim.Measure(0,0,0,0,0,0,0,0,0,0,[],[],0)
-            data_cloud = sim.Measure(0,0,0,0,0,0,0,0,0,0,[],[],0)
+            data = sim.Measure(0,0,0,0,0,0,0,0,0,0,[],[],[])
+            data_cloud = sim.Measure(0,0,0,0,0,0,0,0,0,0,[],[],[])
         
             # simulator
             s = sim.Simulator(data, data_cloud, LOAD, SERVICE, ARRIVAL, BUFFER_SIZE, 
