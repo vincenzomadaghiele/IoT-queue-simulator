@@ -32,7 +32,7 @@ if __name__ == '__main__':
 
     time_tot=[]
     lost_tot=[]
-    num_sim=20
+    num_sim=50
     f_space=np.linspace(0,1,21)
     for seed in range(num_sim):
         random.seed(seed)
@@ -69,8 +69,8 @@ if __name__ == '__main__':
     plt.plot(f_space, T)
     plt.grid()
     plt.xlabel("f")
-    plt.ylabel("Average waiting delay")
-    plt.title("Average waiting delay for the whole system")
+    plt.ylabel("Average queuing delay")
+    plt.title("Average queuing delay for the whole system")
     plt.show()
 
     plt.plot(f_space, L)

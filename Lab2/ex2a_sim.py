@@ -32,7 +32,7 @@ if __name__ == '__main__':
     
     time_tot=[]
     lost_tot=[]
-    num_sim=20
+    num_sim=50
     BUFFERS=np.linspace(0,20,21)
     for seed in range(num_sim):
         random.seed(seed)
@@ -71,8 +71,8 @@ if __name__ == '__main__':
     plt.plot(BUFFERS, T)
     plt.grid()
     plt.xlabel("MDC buffer size")
-    plt.ylabel("Average waiting delay")
-    plt.title("Average waiting delay for the whole system")
+    plt.ylabel("Average queuing delay")
+    plt.title("Average queuing delay for the whole system")
     plt.show()
 
     plt.plot(BUFFERS, L)

@@ -26,11 +26,11 @@ if __name__ == '__main__':
     CLOUD_SERVERS = 1
     
     # SIMULATION PARAMS
-    SIM_TIME = 800000
+    SIM_TIME = 1000000
     
     time_tot=[]
     lost_tot=[]
-    num_sim=10
+    num_sim=50
     BUFFERS=np.linspace(0,20,21)
     for seed in range(num_sim):
         random.seed(seed)
@@ -67,8 +67,8 @@ if __name__ == '__main__':
     plt.plot(BUFFERS, T)
     plt.grid()
     plt.xlabel("CDC buffer size")
-    plt.ylabel("Average waiting delay")
-    plt.title("Average waiting delay for the whole system")
+    plt.ylabel("Average queuing delay")
+    plt.title("Average queuing delay for the whole system")
     plt.show()
 
     plt.plot(BUFFERS, L)
