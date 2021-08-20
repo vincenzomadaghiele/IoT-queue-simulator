@@ -14,7 +14,7 @@ if __name__ == '__main__':
         
     # PARAMS
     SERVICE = 100
-    LOAD = 4
+    LOAD = 1.5
     ARRIVAL = SERVICE/LOAD
 
     # SYSTEM PARAMS 
@@ -28,35 +28,53 @@ if __name__ == '__main__':
     # SIMULATION PARAMS
     SIM_TIME = 800000
     
-    time_sys=[]
-    lost_pkt=[]
-    BUFFERS=np.linspace(0,50,51)
-    for CLOUD_BUFFER_SIZE in BUFFERS:
-        data = sim.Measure(0,0,0,0,0,0,0,0,0,0,[],[],0)
-        data_cloud = sim.Measure(0,0,0,0,0,0,0,0,0,0,[],[],0)
+    time_tot=[]
+    lost_tot=[]
+    num_sim=10
+    BUFFERS=np.linspace(0,20,21)
+    for seed in range(num_sim):
+        random.seed(seed)
+        np.random.seed(seed)
+        time_sys=[]
+        lost_pkt=[]
+        for CLOUD_BUFFER_SIZE in BUFFERS:
+            data = sim.Measure(0,0,0,0,0,0,0,0,0,0,[],[],0)
+            data_cloud = sim.Measure(0,0,0,0,0,0,0,0,0,0,[],[],0)
 
-        # simulator
-        s = sim.Simulator(data, data_cloud, LOAD, SERVICE, ARRIVAL, BUFFER_SIZE, 
-                          FOG_NODES, SIM_TIME, f, CLOUD_SERVERS, CLOUD_BUFFER_SIZE, 
-                          SERVICE_CLOUD)
-        print_everything = False
-        data, data_cloud, time, _, _ = s.simulate(print_everything)
+            # simulator
+            s = sim.Simulator(data, data_cloud, LOAD, SERVICE, ARRIVAL, BUFFER_SIZE, 
+                              FOG_NODES, SIM_TIME, f, CLOUD_SERVERS, CLOUD_BUFFER_SIZE, 
+                              SERVICE_CLOUD)
+            print_everything = False
+            data, data_cloud, time, _, _ = s.simulate(print_everything)
 
-        #time_sys.append(np.mean(data.waitingDelay)+np.mean(data_cloud.waitingDelay))
-        time_sys.append((data.delay/data.dep)+(data_cloud.delay/data_cloud.dep))
-        lost_pkt.append(data_cloud.toCloud/data.arr)
+            #time_sys.append(np.mean(data.waitingDelay)+np.mean(data_cloud.waitingDelay))
+            time_sys.append((data.delay/data.dep)+(data_cloud.delay/data_cloud.dep))
+            lost_pkt.append(data_cloud.toCloud/data.arr)
+        time_tot.append(time_sys)
+        lost_tot.append(lost_pkt)
 
-    plt.plot(BUFFERS, time_sys)
+    T=np.zeros(len(BUFFERS))
+    for t in time_tot:
+        T+=np.array(t)
+    T/=num_sim
+
+    L=np.zeros(len(BUFFERS))
+    for l in lost_tot:
+        L+=np.array(l)
+    L/=num_sim
+
+    plt.plot(BUFFERS, T)
     plt.grid()
     plt.xlabel("CDC buffer size")
     plt.ylabel("Average waiting delay")
     plt.title("Average waiting delay for the whole system")
     plt.show()
 
-    plt.plot(BUFFERS, lost_pkt)
+    plt.plot(BUFFERS, L)
     plt.grid()
     plt.xlabel("CDC buffer size")
     plt.ylabel("Loss probability")
-    plt.ylim([0,1])
+    #plt.ylim([0,1])
     plt.title("Probability to lose a packet")
     plt.show()

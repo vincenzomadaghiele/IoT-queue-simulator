@@ -21,7 +21,7 @@ if __name__ == '__main__':
     BUFFER_SIZE = 7
     FOG_NODES = 1 
     f = 0.7
-    
+
     SERVICE_CLOUD = 50
     CLOUD_BUFFER_SIZE = 10
     CLOUD_SERVERS = 1
@@ -29,35 +29,54 @@ if __name__ == '__main__':
     # SIMULATION PARAMS
     SIM_TIME = 1000000
     
-    time_sys=[]
-    lost_pkt=[]
-    f_space=np.linspace(0,1,31)
-    for f in f_space:
-        data = sim.Measure(0,0,0,0,0,0,0,0,0,0,[],[],0)
-        data_cloud = sim.Measure(0,0,0,0,0,0,0,0,0,0,[],[],0)
 
-        # simulator
-        s = sim.Simulator(data, data_cloud, LOAD, SERVICE, ARRIVAL, BUFFER_SIZE, 
-                          FOG_NODES, SIM_TIME, f, CLOUD_SERVERS, CLOUD_BUFFER_SIZE, 
-                          SERVICE_CLOUD)
-        print_everything = False
-        data, data_cloud, time, _, _ = s.simulate(print_everything)
+    time_tot=[]
+    lost_tot=[]
+    num_sim=20
+    f_space=np.linspace(0,1,21)
+    for seed in range(num_sim):
+        random.seed(seed)
+        np.random.seed(seed)
+        time_sys=[]
+        lost_pkt=[]
+        for f in f_space:
+            data = sim.Measure(0,0,0,0,0,0,0,0,0,0,[],[],0)
+            data_cloud = sim.Measure(0,0,0,0,0,0,0,0,0,0,[],[],0)
 
-        #time_sys.append(np.mean(data.waitingDelay)+np.mean(data_cloud.waitingDelay))
-        time_sys.append((data.delay/data.dep)+(data_cloud.delay/data_cloud.dep))
-        lost_pkt.append(data_cloud.toCloud/data.arr)
+            # simulator
+            s = sim.Simulator(data, data_cloud, LOAD, SERVICE, ARRIVAL, BUFFER_SIZE, 
+                              FOG_NODES, SIM_TIME, f, CLOUD_SERVERS, CLOUD_BUFFER_SIZE, 
+                              SERVICE_CLOUD)
+            print_everything = False
+            data, data_cloud, time, _, _ = s.simulate(print_everything)
+
+            #time_sys.append(np.mean(data.waitingDelay)+np.mean(data_cloud.waitingDelay))
+            time_sys.append((data.delay/data.dep)+(data_cloud.delay/data_cloud.dep))
+            lost_pkt.append(data_cloud.toCloud/data.arr)
+        time_tot.append(time_sys)
+        lost_tot.append(lost_pkt)
+
+    T=np.zeros(len(f_space))
+    for t in time_tot:
+        T+=np.array(t)
+    T/=num_sim
+
+    L=np.zeros(len(f_space))
+    for l in lost_tot:
+        L+=np.array(l)
+    L/=num_sim
     
-    plt.plot(f_space, time_sys)
+    plt.plot(f_space, T)
     plt.grid()
     plt.xlabel("f")
     plt.ylabel("Average waiting delay")
     plt.title("Average waiting delay for the whole system")
     plt.show()
 
-    plt.plot(f_space, lost_pkt)
+    plt.plot(f_space, L)
     plt.grid()
     plt.xlabel("f")
     plt.ylabel("Loss probability")
-    plt.ylim([0,1])
+    #plt.ylim([0,1])
     plt.title("Probability to lose a packet")
     plt.show()
