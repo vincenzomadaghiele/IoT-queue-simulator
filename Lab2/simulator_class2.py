@@ -4,6 +4,7 @@ Queueing system simmulator class
 
 import random
 import numpy as np
+from scipy.interpolate import interp1d
 from matplotlib import pyplot as plt
 from queue import PriorityQueue
 
@@ -50,6 +51,55 @@ class Server(object):
         # whether the server is idle or not
         self.idle = True
 
+# define functions for daily simulation
+def dailySimFunctions(plot = False):
+    # define interest points
+    f_x_points = np.array([0,5,10,12,18,20,24.5]) * 3600000
+    f_y_points = [0.8,0.6,0.2,0.4,0.25,0.45,0.8]
+    # interpolate points
+    f_av_arrival = interp1d(f_x_points, f_y_points, kind='quadratic')
+    x = [*range(0, 86400000, 1000)]
+    y = f_av_arrival(x) # f(x) is the inter-arrival variation in a day
+
+    if plot:
+        x = np.array(x) / 3600000
+        f_x_points = np.array(f_x_points) / 3600000
+        # Plot inter-arrival variation factor
+        plt.plot(f_x_points, f_y_points,'o')
+        plt.plot(x, y)
+        plt.xlim([0,24])
+        plt.ylim([0,1])
+        plt.grid()
+        plt.xticks(np.arange(0, 25, 2))
+        plt.xlabel('time [hours]')
+        plt.ylabel('Average inter-arrival time factor [ms]')
+        plt.title('Inter-Arrival time variation during the day')
+        plt.show()
+    
+    # define interest points
+    f_x_points = np.array([0,2,4,11,13,15,18,20,24.5]) * 3600000
+    f_y_points = [0.1,0.05,0.2,0.85,0.85,0.7,0.6,0.5,0.1]
+    # interpolate points
+    f_f = interp1d(f_x_points, f_y_points, kind='quadratic')
+    x = [*range(0, 86400000, 1000)]
+    y = f_f(x) # f(x) is the inter-arrival variation in a day
+
+    if plot:
+        x = np.array(x) / 3600000
+        f_x_points = np.array(f_x_points) / 3600000
+        # Plot f variation factor
+        plt.plot(f_x_points, f_y_points, 'o')
+        plt.plot(x, y)
+        plt.xlim([0,24])
+        plt.ylim([0,1])
+        plt.grid()
+        plt.xticks(np.arange(0, 25, 2))
+        plt.xlabel('time [hours]')
+        plt.ylabel('Ratio of Type B (video pkt)')
+        plt.title('Ratio of Tpye B packets')
+        plt.show()
+
+    return f_av_arrival, f_f
 
 # Fog node assignment policies
 def SortedAssignFog(FreeFogNodes):
