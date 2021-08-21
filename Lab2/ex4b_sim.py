@@ -46,8 +46,8 @@ if __name__ == '__main__':
                           SERVICE_CLOUD,f_av_arrival, f_f)
         
         # insert constant service rate for all fog Nodes
-        s.CloudServerServTime = [300, 300, 300, 300]
-        s.CloudServerCosts = [1, 1, 1, 1]
+        s.CloudServerServTime = [500, 500, 500, 500]
+        s.CloudServerCosts = [0.6, 0.6, 0.6, 0.6]
         
         print_everything = False
         data, data_cloud, time, _, _ = s.simulate(print_everything)
