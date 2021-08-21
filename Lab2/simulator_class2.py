@@ -8,12 +8,13 @@ from matplotlib import pyplot as plt
 from queue import PriorityQueue
 
 random.seed(42)
+np.random.seed(42)
 
 class Measure:
     def __init__(self, Narr=0, Ndep=0, NAveraegUser=0, OldTimeEvent=0, AverageDelay=0, 
                  bufferOccupancy=0, oldTbuffer=0, ToCloud=0, NlocallyPreprocessed=0, 
                  ServTime=0, QueueingDelay=[], WaitingDelay=[], departureTimes=[],
-                 timeSystem = []):
+                 timeSystem=[], arrivalTimes=[], lossTimes=[]):
         self.arr = Narr # number of arrivals
         self.dep = Ndep # number of departures
         self.ut = NAveraegUser
@@ -29,6 +30,8 @@ class Measure:
         self.waitingDelay = WaitingDelay
         self.departureTimes = departureTimes
         self.timeSystem = timeSystem
+        self.arrivalTimes = arrivalTimes
+        self.lossTimes = lossTimes
 
 class Client:
     def __init__(self,type,arrival_time,service_time,fogNode,isPreProcessed,cloudServer=False,service_time_cloud=0, arrival_time_cloud=0):
@@ -155,6 +158,7 @@ class Simulator():
         self.data.arr += 1
         self.data.ut += self.users*(time - self.data.oldT)
         self.data.oldT = time
+        self.data.arrivalTimes.append(time)
     
         # sample the time until the next event
         inter_arrival = random.expovariate(lambd=1.0/self.ARRIVAL)
@@ -360,9 +364,11 @@ class Simulator():
         elif self.users_cloud > self.CLOUD_BUFFER_SIZE + self.CLOUD_SERVERS:
             # if buffer is full drop pkt 
             self.data_cloud.toCloud += 1 #this are dropped packets
+            self.data.lossTimes.append(time)
             # remove client from queue
             self.users_cloud -= 1
             queue_cloud.pop(-1)
+            
 
     def departure_cloud(self, time, FES, queue_cloud, server_assign = 'Sorted',
                   distribution = 'Exponential'):
