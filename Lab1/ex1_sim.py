@@ -8,6 +8,7 @@ from matplotlib import pyplot as plt
 import simulator_class as sim
 
 random.seed(42)
+np.random.seed(42)
 
 if __name__ == '__main__':
     
@@ -48,7 +49,8 @@ if __name__ == '__main__':
     plt.grid()
     plt.legend()
     plt.xlabel("Load")
-    plt.ylabel("Loss probability")
+    plt.ylabel("Forwarding probability")
+    plt.title("Probability to forward a packet to the CDC")
     plt.ylim([0,1])
     plt.show()
 
@@ -61,6 +63,7 @@ if __name__ == '__main__':
     plt.legend()
     plt.xlabel("Load")
     plt.ylabel("Avg number of users")
+    plt.title("Average number of users in the system")
     plt.ylim([0,1])
     plt.show()
 
