@@ -1,2 +1,2 @@
 # MCDSM_labs
-This repo contains the labs of Management and Content Delivery for Smart Networks
+This repository contains the code for a queueing system simulation applied to an IoT scenario. The simulation scenario involves the portion of an Internet of Things (IoT) network, consisting of a group of sensors for real-time monitoring, a Micro Data Center and a Cloud Data Center. 
