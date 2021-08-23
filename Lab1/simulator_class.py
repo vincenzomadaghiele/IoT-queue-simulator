@@ -7,6 +7,9 @@ import numpy as np
 from matplotlib import pyplot as plt
 from queue import PriorityQueue
 
+random.seed(42)
+np.random.seed(42)
+
 class Measure:
     def __init__(self, Narr, Ndep, NAveraegUser, OldTimeEvent, AverageDelay, 
                  bufferOccupancy, oldTbuffer, ToCloud, NlocallyPreprocessed, 
@@ -93,12 +96,13 @@ class Simulator():
 
         # FOG NODES
         # True: server is currently idle; False: server is currently busy
-        self.FreeFogNodes = [True for fogNode in range(FOG_NODES)]
+        self.FreeFogNodes = [True for fogNode in range(self.FOG_NODES)]
         # Busy time for each fog node
-        self.FogBusyTime = np.zeros(FOG_NODES)
+        self.FogBusyTime = np.zeros(self.FOG_NODES)
         # Average service time for each fogNode
-        var = 5
-        self.FogNodesServTime = [np.clip(np.random.normal(SERVICE, var), SERVICE-var, SERVICE+var) for fogNode in range(FOG_NODES)]
+        #var = 5
+        #self.FogNodesServTime = [np.clip(np.random.normal(SERVICE, var), SERVICE-var, SERVICE+var) for fogNode in range(FOG_NODES)]
+        self.FogNodesServTime = [self.SERVICE for fogNode in range(self.FOG_NODES)]
         # Cost is inversely proportional to service time i.e. faster node --> more expensive
         self.FogNodesCosts = np.divide(1, self.FogNodesServTime)
         # Extract costs as gaussian values between zero and one
@@ -152,11 +156,12 @@ class Simulator():
             # sample the service time
             if distribution == 'Exponential':
                 service_time = random.expovariate(1.0/fogService)
-            elif distribution == 'Uniform':
-                var = 1000
-                service_time = fogService + random.uniform(0, var)
             elif distribution == 'Constant':
                 service_time = fogService
+            elif distribution == 'Uniform':
+                var = 200
+                service_time=random.uniform(fogService-(var/2), fogService+(var/2))
+            
     
             # schedule when the client will finish the server
             self.FES.put((time + service_time, "departure"))
@@ -223,11 +228,12 @@ class Simulator():
             # sample the service time
             if distribution == 'Exponential':
                 service_time = random.expovariate(1.0/fogService)
-            elif distribution == 'Uniform':
-                var = 1000
-                service_time = fogService + random.uniform(0, var)
             elif distribution == 'Constant':
                 service_time = fogService
+            elif distribution == 'Uniform':
+                var = 200
+                service_time=random.uniform(fogService-(var/2), fogService+(var/2))
+            
     
             # schedule when the client will finish the server
             self.FES.put((time + service_time, "departure"))
