@@ -39,26 +39,25 @@ if __name__ == '__main__':
             mean_time_sys += data.delay/data.dep
             mean_avg_usr += data.ut/time
             
-            '''
-            # theoretical value for average time in the system
-            if DISTRIBUTION == 'Uniform':
-                var = 500
-                Cs2 = var / (SERVICE**2)
-                th_av_time_sys = SERVICE + (LOAD * SERVICE * ((1 + Cs2) / (2*(1 - LOAD))))
-            elif DISTRIBUTION == 'Exponential':
-                Cs2 = 1
-                th_av_time_sys = 1 / ((1/SERVICE) - (1/ARRIVAL))
-            elif DISTRIBUTION == 'Constant':
-                Cs2 = 0
-                th_av_time_sys = ((2 - LOAD)/ 2) * (1 / ((1/SERVICE) - (1/ARRIVAL)))
-            th_av_time_sys_list.append(th_av_time_sys)
-            '''
+        # theoretical value for average time in the system
+        if DISTRIBUTION == 'Uniform':
+            var = 500
+            Cs2 = var / (SERVICE**2)
+            th_av_time_sys = SERVICE + (LOAD * SERVICE * ((1 + Cs2) / (2*(1 - LOAD))))
+        elif DISTRIBUTION == 'Exponential':
+            Cs2 = 1
+            th_av_time_sys = 1 / ((1/SERVICE) - (1/ARRIVAL))
+        elif DISTRIBUTION == 'Constant':
+            Cs2 = 0
+            th_av_time_sys = ((2 - LOAD)/ 2) * (1 / ((1/SERVICE) - (1/ARRIVAL)))
             
         # find averages
         mean_time_sys /= NUM_SIMULATIONS
         mean_avg_usr /= NUM_SIMULATIONS
         
         print(f'Distribution: {DISTRIBUTION}')
-        print(f'Average time in the system: {mean_time_sys}')
-        print(f'Average nnumber of users: {mean_avg_usr}')    
+        print(f'Average time in the system: {mean_time_sys}')        
+        print(f'Theoretical average time in the system: {th_av_time_sys}')
+        print(f'Average nnumber of users: {mean_avg_usr}')  
+        print(f'Theoretical average nnumber of users: {mean_avg_usr}')    
         print()

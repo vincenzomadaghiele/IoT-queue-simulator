@@ -15,7 +15,9 @@ class Measure:
     def __init__(self, Narr=0, Ndep=0, NAveraegUser=0, OldTimeEvent=0, AverageDelay=0, 
                  bufferOccupancy=0, oldTbuffer=0, ToCloud=0, NlocallyPreprocessed=0, 
                  ServTime=0, QueueingDelay=[], WaitingDelay=[], departureTimes=[],
-                 timeSystem=[], arrivalTimes=[], lossTimes=[], costs=[]):
+                 timeSystem=[], arrivalTimes=[], lossTimes=[], costs=[],
+                 lostPktTypes=[], typeAdelay=[], typeBdelay=[], typeAarrival=[],
+                 typeBarrival=[]):
         self.arr = Narr # number of arrivals
         self.dep = Ndep # number of departures
         self.ut = NAveraegUser
@@ -34,6 +36,12 @@ class Measure:
         self.arrivalTimes = arrivalTimes
         self.lossTimes = lossTimes
         self.costs = costs
+        self.lostPktTypes = lostPktTypes
+        self.typeAdelay = typeAdelay
+        self.typeAarrival = typeAarrival
+        self.typeBdelay = typeBdelay
+        self.typeBarrival = typeBarrival
+        
 
 class Client:
     def __init__(self,type,arrival_time,service_time,fogNode,isPreProcessed,cloudServer=False,service_time_cloud=0, arrival_time_cloud=0):
@@ -220,11 +228,11 @@ class Simulator():
         self.users += 1
             
         # create a record for the client
-        num=random.uniform(0,1) #extract type of packet at random
-        if num>self.f:
-            pkt_type='A'
+        num = random.uniform(0,1) #extract type of packet at random
+        if num > self.f:
+            pkt_type = 'A'
         else:
-            pkt_type='B'
+            pkt_type = 'B'
         client = Client(pkt_type,time,0,None,False,False,0,0)
     
         # insert the record in the queue
@@ -295,7 +303,7 @@ class Simulator():
         
         # get the first element from the queue
         client = queue.pop(0)
-        if client.type=='B':
+        if client.type == 'B':
             self.FES.put((time+ self.prop_delay, "arrival_cloud"))
             client.arrival_time_cloud=time+ self.prop_delay
             queue_cloud.append(client)
@@ -303,6 +311,9 @@ class Simulator():
         self.data.delay += (time - client.arrival_time)
         self.data.queueingDelay.append(time - client.arrival_time)
         self.users -= 1
+        if client.type == 'A':
+            self.data_cloud.typeAdelay.append(time - client.arrival_time)
+            self.data_cloud.typeAarrival.append(client.arrival_time)
         
         # free fogNode
         self.FreeFogNodes[client.fogNode] = True
@@ -366,7 +377,7 @@ class Simulator():
         
         # if the server is idle start the service
         if self.users_cloud <= self.CLOUD_SERVERS:
-            client=queue_cloud[self.users_cloud-1]
+            client = queue_cloud[self.users_cloud-1]
             # Assign a fogNode to process client
             if server_assign == 'Sorted':
                 newBusyServerIndex, self.FreeCloudServers = SortedAssignFog(self.FreeCloudServers)
@@ -418,7 +429,8 @@ class Simulator():
             self.data.lossTimes.append(time)
             # remove client from queue
             self.users_cloud -= 1
-            queue_cloud.pop(-1)
+            client = queue_cloud.pop(-1)
+            self.data_cloud.lostPktTypes.append(client.type)
             
 
     def departure_cloud(self, time, FES, queue_cloud, server_assign = 'Sorted',
@@ -442,6 +454,13 @@ class Simulator():
         self.data_cloud.departureTimes.append(time)
         self.data_cloud.timeSystem.append(time - client.arrival_time)
         self.users_cloud -= 1
+        
+        if client.type == 'A':
+            self.data_cloud.typeAdelay.append(time - client.arrival_time)
+            self.data_cloud.typeAarrival.append(client.arrival_time)
+        elif client.type == 'B':
+            self.data_cloud.typeBdelay.append(time - client.arrival_time)
+            self.data_cloud.typeBarrival.append(client.arrival_time)
         
         # free fogNode
         self.FreeCloudServers[client.cloudServer] = True
