@@ -15,7 +15,7 @@ if __name__ == '__main__':
     f_av_arrival, f_f = sim.dailySimFunctions()
 
     # simulate ABBC
-        
+    
     # Micro Data Center (MDC)
     SERVICE = 1000
     ARRIVAL = 500
@@ -27,7 +27,7 @@ if __name__ == '__main__':
     f = 0.8
     SERVICE_CLOUD = 500
     CLOUD_BUFFER_SIZE = 10
-    CLOUD_SERVERS = 4
+    CLOUD_SERVERS = 2
     
     # SIMULATION PARAMS
     SIM_TIME = 86400000 # 24 hours simulation
@@ -42,13 +42,13 @@ if __name__ == '__main__':
                       SERVICE_CLOUD,f_av_arrival, f_f)
     
     # insert constant service rate for all fog Nodes
-    s.CloudServerServTime = [200, 200, 500, 1000]
-    s.CloudServerCosts = [1, 1, 0.4, 0.1]
+    s.CloudServerServTime = [200, 200]
+    s.CloudServerCosts = [1, 1]
     
     print_everything = False
     data, data_cloud, time, _, _ = s.simulate(print_everything)
     
-    print('A-A-B-C simulation')
+    print('A-A simulation')
     print('-'*40)
     print(f'Average Queueing Delay [ms] = {(data.delay + data_cloud.delay) / (data.dep + data_cloud.dep)}')
     print(f'Loss Probability = {data_cloud.toCloud/data.arr}')

@@ -57,7 +57,6 @@ if __name__ == '__main__':
     
     
     # Average queueing delay with progressively faster MDC service
-    
     costs_hourlyABBC = []
     for i in range(0,24):
         cost_hourly = 0
@@ -66,16 +65,19 @@ if __name__ == '__main__':
                 cost_hourly += data_cloud.costs[j]
         costs_hourlyABBC.append(cost_hourly)
 
-    plt.grid(axis='y',zorder=0)
-    plt.bar([*range(0,24)],costs_hourlyABBC, zorder=3)
-    plt.xticks(np.arange(0, 25, 2))
-    plt.xlabel("time [hours]")
-    plt.ylabel("Cost")
-    plt.title('Hourly cost of the cloud server')
-    plt.show()
+    delay_hourly_avgsABBC = []
+    for i in range(0,24):
+        delay_hourly_avg = 0
+        hour_count = 0
+        for j in range(len(data_cloud.departureTimes)):
+            if data_cloud.departureTimes[j] > i * 3600000 and data_cloud.departureTimes[j] < (i+1) * 3600000:
+                delay_hourly_avg += data_cloud.timeSystem[j]
+                hour_count += 1
+        delay_hourly_avg /= hour_count
+        delay_hourly_avgsABBC.append(delay_hourly_avg)
 
 
-    # AABC
+    #%% AABC
     # data storage object
     data = sim.Measure()
     data_cloud = sim.Measure()
@@ -86,7 +88,7 @@ if __name__ == '__main__':
                       SERVICE_CLOUD,f_av_arrival, f_f)
     
     # insert constant service rate for all fog Nodes
-    s.CloudServerServTime = [100, 100, 500, 1000]
+    s.CloudServerServTime = [200, 200, 500, 1000]
     s.CloudServerCosts = [1, 1, 0.4, 0.1]
     
     print_everything = False
@@ -98,10 +100,8 @@ if __name__ == '__main__':
     print(f'Loss Probability = {data_cloud.toCloud/data.arr}')
     print(f'Average number of users = {(data.ut + data_cloud.ut)/time}')
     print(f'Total Operational Cost = {sum(s.FogBusyTime * s.FogNodesCosts) + sum(s.CloudServerBusyTime * s.CloudServerCosts)}')
-    
-    
+
     # Average queueing delay with progressively faster MDC service
-    
     costs_hourlyAABC = []
     for i in range(0,24):
         cost_hourly = 0
@@ -110,8 +110,19 @@ if __name__ == '__main__':
                 cost_hourly += data_cloud.costs[j]
         costs_hourlyAABC.append(cost_hourly)
 
+    delay_hourly_avgsAABC = []
+    for i in range(0,24):
+        delay_hourly_avg = 0
+        hour_count = 0
+        for j in range(len(data_cloud.departureTimes)):
+            if data_cloud.departureTimes[j] > i * 3600000 and data_cloud.departureTimes[j] < (i+1) * 3600000:
+                delay_hourly_avg += data_cloud.timeSystem[j]
+                hour_count += 1
+        delay_hourly_avg /= hour_count
+        delay_hourly_avgsAABC.append(delay_hourly_avg)
 
-    # ABCC
+
+    #%% ABCC
     # data storage object
     data = sim.Measure()
     data_cloud = sim.Measure()
@@ -122,7 +133,7 @@ if __name__ == '__main__':
                       SERVICE_CLOUD,f_av_arrival, f_f)
     
     # insert constant service rate for all fog Nodes
-    s.CloudServerServTime = [100, 500, 1000, 1000]
+    s.CloudServerServTime = [200, 500, 1000, 1000]
     s.CloudServerCosts = [1, 0.4, 0.1, 0.1]
     
     print_everything = False
@@ -137,7 +148,6 @@ if __name__ == '__main__':
     
     
     # Average queueing delay with progressively faster MDC service
-    
     costs_hourlyABCC = []
     for i in range(0,24):
         cost_hourly = 0
@@ -145,6 +155,17 @@ if __name__ == '__main__':
             if data_cloud.departureTimes[j] > i * 3600000 and data_cloud.departureTimes[j] < (i+1) * 3600000:
                 cost_hourly += data_cloud.costs[j]
         costs_hourlyABCC.append(cost_hourly)
+
+    delay_hourly_avgsABCC = []
+    for i in range(0,24):
+        delay_hourly_avg = 0
+        hour_count = 0
+        for j in range(len(data_cloud.departureTimes)):
+            if data_cloud.departureTimes[j] > i * 3600000 and data_cloud.departureTimes[j] < (i+1) * 3600000:
+                delay_hourly_avg += data_cloud.timeSystem[j]
+                hour_count += 1
+        delay_hourly_avg /= hour_count
+        delay_hourly_avgsABCC.append(delay_hourly_avg)
 
 
     #%% BCAA
@@ -180,26 +201,74 @@ if __name__ == '__main__':
             if data_cloud.departureTimes[j] > i * 3600000 and data_cloud.departureTimes[j] < (i+1) * 3600000:
                 cost_hourly += data_cloud.costs[j]
         costs_hourlyBCAA.append(cost_hourly)
+        
+    delay_hourly_avgsBCAA = []
+    for i in range(0,24):
+        delay_hourly_avg = 0
+        hour_count = 0
+        for j in range(len(data_cloud.departureTimes)):
+            if data_cloud.departureTimes[j] > i * 3600000 and data_cloud.departureTimes[j] < (i+1) * 3600000:
+                delay_hourly_avg += data_cloud.timeSystem[j]
+                hour_count += 1
+        delay_hourly_avg /= hour_count
+        delay_hourly_avgsBCAA.append(delay_hourly_avg)
+    
+    #%% CBAA
+    
+    # data storage object
+    data = sim.Measure()
+    data_cloud = sim.Measure()
+    
+    # simulator
+    s = sim.Simulator(data, data_cloud, LOAD, SERVICE, ARRIVAL, BUFFER_SIZE, 
+                      FOG_NODES, SIM_TIME, f, CLOUD_SERVERS, CLOUD_BUFFER_SIZE, 
+                      SERVICE_CLOUD,f_av_arrival, f_f)
+    
+    # insert constant service rate for all fog Nodes
+    s.CloudServerServTime = [1000, 500, 100, 100]
+    s.CloudServerCosts = [0.1, 0.4, 1, 1]
+    
+    print_everything = False
+    data, data_cloud, time, _, _ = s.simulate(print_everything)
+    
+    print('C-B-A-A simulation')
+    print('-'*40)
+    print(f'Average Queueing Delay [ms] = {(data.delay + data_cloud.delay) / (data.dep + data_cloud.dep)}')
+    print(f'Loss Probability = {data_cloud.toCloud/data.arr}')
+    print(f'Average number of users = {(data.ut + data_cloud.ut)/time}')
+    print(f'Total Operational Cost = {sum(s.FogBusyTime * s.FogNodesCosts) + sum(s.CloudServerBusyTime * s.CloudServerCosts)}')
+    
+
+    costs_hourlyCBAA = []
+    for i in range(0,24):
+        cost_hourly = 0
+        for j in range(len(data_cloud.departureTimes)):
+            if data_cloud.departureTimes[j] > i * 3600000 and data_cloud.departureTimes[j] < (i+1) * 3600000:
+                cost_hourly += data_cloud.costs[j]
+        costs_hourlyCBAA.append(cost_hourly)
+        
+    delay_hourly_avgsCBAA = []
+    for i in range(0,24):
+        delay_hourly_avg = 0
+        hour_count = 0
+        for j in range(len(data_cloud.departureTimes)):
+            if data_cloud.departureTimes[j] > i * 3600000 and data_cloud.departureTimes[j] < (i+1) * 3600000:
+                delay_hourly_avg += data_cloud.timeSystem[j]
+                hour_count += 1
+        delay_hourly_avg /= hour_count
+        delay_hourly_avgsCBAA.append(delay_hourly_avg)
     
     
-    #%% Average queueing delay with progressively faster MDC service
+    #%% Plot compared hourly cost and delay of the best 3 configurations
 
-    plt.grid(axis='y',zorder=0)
-    plt.bar([*range(0,24)],costs_hourlyABBC, zorder=3)
-    plt.xticks(np.arange(0, 25, 2))
-    plt.xlabel("time [hours]")
-    plt.ylabel("Cost")
-    plt.title('Hourly cost of the cloud server')
-    plt.show()
-
-    fig, ax = plt.subplots(figsize=(14, 5))
+    fig, ax = plt.subplots(figsize=(14, 4))
     x = np.array([*range(0,24)])
     ax = plt.subplot()
     w = 0.3
     plt.grid(axis='y',zorder=0)
     ax.bar(x, costs_hourlyAABC, width=w, align='center', zorder=3, label='A-A-B-C')
-    ax.bar(x-w, costs_hourlyABBC, width=w, align='center', zorder=3, label='A-B-B-C')
-    ax.bar(x+w, costs_hourlyABCC, width=w, align='center', zorder=3, label='A-B-C-C')
+    ax.bar(x-w, costs_hourlyBCAA, width=w, align='center', zorder=3, label='B-C-A-A')
+    ax.bar(x+w, costs_hourlyCBAA, width=w, align='center', zorder=3, label='C-B-A-A')
     ax.autoscale(tight=True)
     plt.legend()
     plt.xticks(np.arange(0, 24, 1))
@@ -208,3 +277,20 @@ if __name__ == '__main__':
     plt.title('Overall hourly cost of the cloud system')
     plt.show()
     
+    fig, ax = plt.subplots(figsize=(14, 4))
+    x = np.array([*range(0,24)])
+    ax = plt.subplot()
+    w = 0.3
+    plt.grid(axis='y',zorder=0)
+    ax.bar(x, delay_hourly_avgsAABC, width=w, align='center', zorder=3, label='A-A-B-C')
+    ax.bar(x-w, delay_hourly_avgsBCAA, width=w, align='center', zorder=3, label='B-C-A-A')
+    ax.bar(x+w, delay_hourly_avgsCBAA, width=w, align='center', zorder=3, label='C-B-A-A')
+    ax.autoscale(tight=True)
+    plt.legend()
+    plt.xticks(np.arange(0, 24, 1))
+    plt.xlabel("time [hours]")
+    plt.ylabel("Queueing delay [ms]")
+    plt.title('Average hourly queueing delay in the overall system')
+    plt.show()
+    
+
