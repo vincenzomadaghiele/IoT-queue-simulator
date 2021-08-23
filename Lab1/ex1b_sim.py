@@ -2,10 +2,12 @@
 Exercise 1b
 '''
 
+import random
 import numpy as np
 from matplotlib import pyplot as plt
 import simulator_class as sim
 
+random.seed(42)
 np.random.seed(42)
 
 if __name__ == '__main__':
@@ -16,7 +18,6 @@ if __name__ == '__main__':
     tot_pB_list = []
     LOADS = np.linspace(1e-5,13,100).tolist()
     BUFFER_SIZES = [3,5,10]
-    #ARRIVALS = np.linspace(0.5,10,20)[::-1]
     
     for BUFFER_SIZE in BUFFER_SIZES:
         
@@ -29,13 +30,11 @@ if __name__ == '__main__':
         for LOAD in LOADS:
             
             # DATA OBJECT
-            data = sim.Measure(0,0,0,0,0,0,0,0,0,0,[],[],0)
+            data = sim.Measure()
             
             # SIMULATION PARAMETERS
-            #ARRIVAL = 12.0
             SERVICE = 1000.0
             ARRIVAL = SERVICE/LOAD
-            #LOAD = SERVICE/ARRIVAL
             FOG_NODES = 1
             SIM_TIME = 300000
     
@@ -66,46 +65,47 @@ if __name__ == '__main__':
         tot_th_av_time_sys_list.append(th_av_time_sys_list)
         tot_pB_list.append(pB_list)
     
-    colors = [['orangered','deepskyblue','lime'],
-              ['maroon','navy','darkgreen']]
-    # Loss probability vs Load
+    
+    #%% Loss probability vs Load
+
+    colors = [['navy','darkorange','darkgreen'],
+              ['tab:blue','tab:orange','tab:green']]
     for i in range(len(tot_loss_pr)):
-        plt.plot(load_list, tot_loss_pr[i], '-', linewidth=0.7, c=colors[1][i], label=f'Simluated B={BUFFER_SIZES[i]}')
+        plt.plot(load_list, tot_loss_pr[i], '-', linewidth=0.7, c=colors[1][i], label=f'Simluated Buf={BUFFER_SIZES[i]}')
         #plt.plot(load_list, tot_pB_list[i], linewidth=0.5, c=colors[0][i], label=f'Theoretical B={BUFFER_SIZES[i]}')
     plt.grid()
     plt.legend()
     plt.xlabel("Load")
-    plt.ylabel("Loss probability")
-    plt.xlim([0,20])
+    plt.ylabel("Forwarding probability")
+    #plt.xlim([0,20])
     plt.ylim([0,1])
-    plt.title('Loss probability vs Load')
+    plt.title('Forwarding probability vs Load')
     plt.show()
     
     # Loss probability vs Load (zoomed)
     for i in range(len(tot_loss_pr)):
-        plt.plot(load_list, tot_loss_pr[i], '.-', linewidth=0.5, c=colors[1][i], label=f'Simluated B={BUFFER_SIZES[i]}')
-        plt.plot(load_list, tot_pB_list[i], linewidth=0.5, c=colors[0][i], label=f'Theoretical B={BUFFER_SIZES[i]}')
+        plt.plot(load_list, tot_loss_pr[i], '.-', linewidth=0.5, c=colors[1][i], label=f'Simluated Buf={BUFFER_SIZES[i]}')
+        plt.plot(load_list, tot_pB_list[i], linewidth=0.5, c=colors[0][i], label=f'Theoretical Buf={BUFFER_SIZES[i]}')
     plt.grid()
     plt.legend()
     plt.xlabel("Load")
-    plt.ylabel("Loss probability")
+    plt.ylabel("Forwarding probability")
     plt.xlim([0,3])
     plt.ylim([0,1])
-    plt.title('Loss probability vs Load (zoomed)')
+    plt.title('Forwarding probability vs Load (zoomed)')
     plt.show()
 
     
     # Avg time spent in system vs Load
     for i in range(len(tot_time_sys)):
-        plt.plot(load_list, tot_time_sys[i], '.-', linewidth=0.5, c=colors[1][i], label=f'Simulated B={BUFFER_SIZES[i]}')
-        plt.plot(load_list, tot_th_av_time_sys_list[i], linewidth=1, c=colors[0][i], label=f'Theoretical B={BUFFER_SIZES[i]}')
+        plt.plot(load_list, tot_time_sys[i], '.-', linewidth=0.5, c=colors[1][i], label=f'Simulated Buf={BUFFER_SIZES[i]}')
+        plt.plot(load_list, tot_th_av_time_sys_list[i], linewidth=1, c=colors[0][i], label=f'Theoretical Buf={BUFFER_SIZES[i]}')
     plt.grid()
-    plt.legend()
+    plt.legend(loc='lower right', ncol = 2)
     plt.xlabel("Load")
     plt.ylabel("Avgerage time [ms]")
-    #plt.xlim([0,20])
+    #plt.xlim([0,14])
+    plt.ylim([-1000,13000])
     plt.title('Avg time spent in system vs Load')
     plt.show()
-
-
 

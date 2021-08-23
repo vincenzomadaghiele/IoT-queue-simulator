@@ -13,7 +13,7 @@ np.random.seed(42)
 if __name__ == '__main__':
         
     # PARAMS
-    SERVICE = 100
+    SERVICE = 1000
     LOAD = 2
     ARRIVAL = SERVICE/LOAD
 
@@ -21,15 +21,15 @@ if __name__ == '__main__':
     BUFFER_SIZE = 25
     FOG_NODES = 1
     f = 0.7
-    SERVICE_CLOUD = 50
+    SERVICE_CLOUD = 500
     CLOUD_BUFFER_SIZE = 100
     CLOUD_SERVERS = 1
     
     # SIMULATION PARAMS
-    SIM_TIME = 800000
+    SIM_TIME = 300000
     
     # multiple sims
-    num_sim = 100
+    num_sim = 10
     TRANSIENT_THRESHOLD = 200
     X = []
     X_transient = []

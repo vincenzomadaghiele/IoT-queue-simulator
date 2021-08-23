@@ -2,10 +2,12 @@
 Exercise 3
 '''
 
+import random
 import numpy as np
 from matplotlib import pyplot as plt
 import simulator_class as sim
 
+random.seed(42)
 np.random.seed(42)
 
 if __name__ == '__main__':
@@ -16,7 +18,6 @@ if __name__ == '__main__':
     tot_pB_list = []
     LOADS = np.linspace(1e-5,13,100).tolist()
     BUFFER_SIZES = [0,5,float('inf')]
-    #ARRIVALS = np.linspace(0.5,10,20)[::-1]
     
     # Buf = [5, inf], FOG_NODES = 2
     for BUFFER_SIZE in BUFFER_SIZES:
@@ -30,13 +31,11 @@ if __name__ == '__main__':
         for LOAD in LOADS:
             
             # DATA OBJECT
-            data = sim.Measure(0,0,0,0,0,0,0,0,0,0,[],[],0)
+            data = sim.Measure()
             
             # SIMULATION PARAMETERS
-            #ARRIVAL = 12.0
             SERVICE = 1000.0
             ARRIVAL = SERVICE/LOAD
-            #LOAD = SERVICE/ARRIVAL
             FOG_NODES = 2
             SIM_TIME = 300000
     
@@ -69,13 +68,11 @@ if __name__ == '__main__':
     for LOAD in LOADS:
         
         # DATA OBJECT
-        data = sim.Measure(0,0,0,0,0,0,0,0,0,0,[],[],0)
+        data = sim.Measure()
         
         # SIMULATION PARAMETERS
-        #ARRIVAL = 12.0
         SERVICE = 1000.0
         ARRIVAL = SERVICE/LOAD
-        #LOAD = SERVICE/ARRIVAL
         SIM_TIME = 300000
 
         # simulator
@@ -94,10 +91,13 @@ if __name__ == '__main__':
     tot_th_av_time_sys_list.append(th_av_time_sys_list)
     tot_pB_list.append(pB_list)
 
+
+    #%% Plot statistics
     
-    colors = [['orangered','deepskyblue','lime','orange'],
-              ['maroon','navy','darkgreen','chocolate']]
-    labels = ['Buf=0, Fog=2','Buf=5, Fog=2', 'Buf=inf, Fog=2', 'Buf=5, Fog=1']
+    colors = [['navy','darkorange','darkgreen','darkred'],
+              ['tab:blue','tab:orange','tab:green','tab:red']]
+    labels = ['Buf=0, Fog=2','Buf=5, Fog=2', 
+              'Buf=inf, Fog=2', 'Buf=5, Fog=1']
     # Loss probability vs Load
     for i in range(len(tot_loss_pr)):
         plt.plot(load_list, tot_loss_pr[i], '.-', linewidth=.7, c=colors[1][i], label=labels[i])

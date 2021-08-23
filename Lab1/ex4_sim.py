@@ -2,9 +2,11 @@
 Exercise 4
 '''
 
+import random
 import numpy as np
 import simulator_class as sim
 
+random.seed(42)
 np.random.seed(42)
 
 if __name__ == '__main__':
@@ -29,7 +31,7 @@ if __name__ == '__main__':
         for i in range(NUM_SIMULATIONS):
             
             # DATA OBJECT
-            data = sim.Measure(0,0,0,0,0,0,0,0,0,0,[],[],0)
+            data = sim.Measure()
     
             # simulator
             s = sim.Simulator(data, LOAD, SERVICE, ARRIVAL, 
@@ -70,7 +72,7 @@ if __name__ == '__main__':
         for i in range(NUM_SIMULATIONS):
             
             # DATA OBJECT
-            data = sim.Measure(0,0,0,0,0,0,0,0,0,0,[],[],0)
+            data = sim.Measure()
             
             # simulator
             s = sim.Simulator(data, LOAD, SERVICE, ARRIVAL, 

@@ -1,5 +1,5 @@
 '''
-Queueing system simmulator class
+Queueing system simmulator class for lab1
 '''
 
 import random
@@ -11,22 +11,21 @@ random.seed(42)
 np.random.seed(42)
 
 class Measure:
-    def __init__(self, Narr, Ndep, NAveraegUser, OldTimeEvent, AverageDelay, 
-                 bufferOccupancy, oldTbuffer, ToCloud, NlocallyPreprocessed, 
-                 ServTime, QueueingDelay, WaitingDelay, BusyTime):
+    def __init__(self, Narr=0, Ndep=0, NAveraegUser=0, OldTimeEvent=0, AverageDelay=0, 
+                 bufferOccupancy=0, oldTbuffer=0, ToCloud=0, NlocallyPreprocessed=0, 
+                 ServTime=0, QueueingDelay=[], WaitingDelay=[]):
         self.arr = Narr # number of arrivals
         self.dep = Ndep # number of departures
-        self.ut = NAveraegUser
-        self.oldT = OldTimeEvent
-        self.delay = AverageDelay 
-        # new metrics
-        self.bufferOccupancy = bufferOccupancy
-        self.oldTbuffer = oldTbuffer
+        self.ut = NAveraegUser # average number of users
+        self.oldT = OldTimeEvent # last time event
+        self.delay = AverageDelay # average delay
+        self.bufferOccupancy = bufferOccupancy # buffer occupancy
+        self.oldTbuffer = oldTbuffer # last time event in the buffer
         self.toCloud = ToCloud # pkts sent to cloud
         self.locallyPreprocessed = NlocallyPreprocessed # pkts sent to cloud
-        self.serviceTime = ServTime
-        self.queueingDelay = QueueingDelay
-        self.waitingDelay = WaitingDelay
+        self.serviceTime = ServTime # service time
+        self.queueingDelay = QueueingDelay # queueing delay
+        self.waitingDelay = WaitingDelay # waiting delay
 
 class Client:
     def __init__(self,type,arrival_time,service_time,fogNode):
@@ -34,13 +33,6 @@ class Client:
         self.arrival_time = arrival_time
         self.service_time = service_time
         self.fogNode = fogNode
-
-class Server(object):
-    # constructor
-    def __init__(self):
-        # whether the server is idle or not
-        self.idle = True
-
 
 # Fog node assignment policies
 def SortedAssignFog(FreeFogNodes):
@@ -69,6 +61,7 @@ def LeastCostlyAssignFog(FreeFogNodes, costs):
     FreeFogNodes[newBusyFogIndex] = False
     return newBusyFogIndex, FreeFogNodes
 
+# Simulator class
 class Simulator():
     def __init__(self, data, LOAD = 0.85, SERVICE = 10.0, ARRIVAL = 0,
                  BUFFER_SIZE = 3, FOG_NODES = 5, SIM_TIME = 500000):
@@ -162,7 +155,6 @@ class Simulator():
                 var = 200
                 service_time=random.uniform(fogService-(var/2), fogService+(var/2))
             
-    
             # schedule when the client will finish the server
             self.FES.put((time + service_time, "departure"))
             self.data.serviceTime += service_time
@@ -322,11 +314,11 @@ class Simulator():
 
 if __name__ == '__main__':
     
-    data = Measure(0,0,0,0,0,0,0,0,0,0,[],[],0)
+    data = Measure()
     
     LOAD = 0.85
     SERVICE = 10.0
-    ARRIVAL = 0 # default arrival
+    ARRIVAL = SERVICE/LOAD # default arrival
     
     # SYSTEM PARAMS 
     BUFFER_SIZE = 3 #float('inf')
@@ -338,6 +330,6 @@ if __name__ == '__main__':
     # instaciate simulator
     s = Simulator(data, LOAD, SERVICE, ARRIVAL, BUFFER_SIZE, FOG_NODES, SIM_TIME)
     print_everything = True
-    data, time = s.simulate(print_everything)
+    data, time, _, _ = s.simulate(print_everything)
     
 

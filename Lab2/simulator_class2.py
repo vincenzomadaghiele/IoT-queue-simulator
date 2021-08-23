@@ -179,12 +179,13 @@ class Simulator():
 
         # FOG NODES
         # True: server is currently idle; False: server is currently busy
-        self.FreeFogNodes = [True for fogNode in range(FOG_NODES)]
+        self.FreeFogNodes = [True for fogNode in range(self.FOG_NODES)]
         # Busy time for each fog node
-        self.FogBusyTime = np.zeros(FOG_NODES)
+        self.FogBusyTime = np.zeros(self.FOG_NODES)
         # Average service time for each fogNode
-        var = 5
-        self.FogNodesServTime = [np.clip(np.random.normal(SERVICE, var), SERVICE-var, SERVICE+var) for fogNode in range(FOG_NODES)]
+        #var = 5
+        #self.FogNodesServTime = [np.clip(np.random.normal(SERVICE, var), SERVICE-var, SERVICE+var) for fogNode in range(FOG_NODES)]
+        self.FogNodesServTime = [self.SERVICE for fogNode in range(self.FOG_NODES)]
         # Cost is inversely proportional to service time i.e. faster node --> more expensive
         self.FogNodesCosts = np.divide(1, self.FogNodesServTime)
         # Extract costs as gaussian values between zero and one
@@ -192,12 +193,13 @@ class Simulator():
 
         # CLOUD SERVERS
         # True: server is currently idle; False: server is currently busy
-        self.FreeCloudServers = [True for server in range(CLOUD_SERVERS)]
+        self.FreeCloudServers = [True for server in range(self.CLOUD_SERVERS)]
         # Busy time for each fog node
-        self.CloudServerBusyTime = np.zeros(CLOUD_SERVERS)
+        self.CloudServerBusyTime = np.zeros(self.CLOUD_SERVERS)
         # Average service time for each fogNode
-        var = 5
-        self.CloudServerServTime = [np.clip(np.random.normal(SERVICE_CLOUD, var), SERVICE_CLOUD-var, SERVICE_CLOUD+var) for server in range(CLOUD_SERVERS)]
+        #var = 5
+        #self.CloudServerServTime = [np.clip(np.random.normal(SERVICE_CLOUD, var), SERVICE_CLOUD-var, SERVICE_CLOUD+var) for server in range(CLOUD_SERVERS)]
+        self.CloudServerServTime = [self.SERVICE_CLOUD for server in range(self.CLOUD_SERVERS)]
         # Cost is inversely proportional to service time i.e. faster node --> more expensive
         self.CloudServerCosts = np.divide(1, self.CloudServerServTime)
         # Extract costs as gaussian values between zero and one
@@ -224,7 +226,6 @@ class Simulator():
         
         # schedule the next arrival
         self.FES.put((time + inter_arrival, "arrival"))
-    
         self.users += 1
             
         # create a record for the client
@@ -233,6 +234,7 @@ class Simulator():
             pkt_type = 'A'
         else:
             pkt_type = 'B'
+        
         client = Client(pkt_type,time,0,None,False,False,0,0)
     
         # insert the record in the queue
@@ -371,9 +373,7 @@ class Simulator():
         self.data_cloud.arr += 1
         self.data_cloud.ut += self.users_cloud*(time - self.data_cloud.oldT)
         self.data_cloud.oldT = time
-    
         self.users_cloud += 1
-            
         
         # if the server is idle start the service
         if self.users_cloud <= self.CLOUD_SERVERS:
@@ -409,7 +409,6 @@ class Simulator():
                     service_time=3*service_time
 
             # schedule when the client will finish the server
-            
             self.FES.put((time + service_time, "departure_cloud"))
             self.data_cloud.serviceTime += service_time
             client.service_time_cloud = service_time

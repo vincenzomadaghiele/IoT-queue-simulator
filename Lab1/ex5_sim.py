@@ -30,7 +30,7 @@ if __name__ == '__main__':
         th_av_time_sys=0
         for i in range(NUM_SIMULATIONS):
             # DATA OBJECT
-            data = sim.Measure(0,0,0,0,0,0,0,0,0,0,[],[],0)
+            data = sim.Measure()
             
             # simulator
             s = sim.Simulator(data, LOAD, SERVICE, ARRIVAL, 

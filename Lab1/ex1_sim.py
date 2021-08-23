@@ -19,15 +19,14 @@ if __name__ == '__main__':
     for SERVICE in range (1,380,2):
         
         # data storage object
-        data = sim.Measure(0,0,0,0,0,0,0,0,0,0,[],[],0)
+        data = sim.Measure()
         
         ARRIVAL = 30.0
         LOAD = SERVICE/ARRIVAL
-        #SERVICE = 10.0
         
         # SYSTEM PARAMS 
-        BUFFER_SIZE = 0 #float('inf')
-        FOG_NODES = 1 # number of fog nodes
+        BUFFER_SIZE = 0 
+        FOG_NODES = 1 
         
         # SIMULATION PARAMS
         SIM_TIME = 300000
