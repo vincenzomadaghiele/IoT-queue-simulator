@@ -493,11 +493,11 @@ class Simulator():
             elif distribution == 'Constant':
                 service_time = serverService
 
-            if next_client.type=='B':
-                if next_client.isPreProcessed==True:
-                    service_time=2*service_time
+            if next_client.type == 'B':
+                if next_client.isPreProcessed == True:
+                    service_time = 2 * service_time
                 else:
-                    service_time=3*service_time
+                    service_time = 3 * service_time
 
             # schedule when the client will finish the server
             self.FES.put((time + service_time, "departure_cloud"))

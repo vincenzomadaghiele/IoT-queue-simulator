@@ -63,9 +63,9 @@ if __name__ == '__main__':
     plt.grid()
     plt.legend()
     plt.xlabel("Buffer size")
-    plt.ylabel("Loss probability")
+    plt.ylabel("Forwarding probability")
     plt.ylim([-0.05,1])
-    plt.title('Loss probability vs Buffer size')
+    plt.title('Forwarding probability vs Buffer size')
     plt.show()
     
     # Avg time spent in system vs Load

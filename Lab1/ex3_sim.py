@@ -104,9 +104,9 @@ if __name__ == '__main__':
     plt.grid()
     plt.legend()
     plt.xlabel("Load")
-    plt.ylabel("Loss probability")
+    plt.ylabel("Forwarding probability")
     plt.ylim([-0.05,1])
-    plt.title('Loss probability vs Load')
+    plt.title('Forwarding probability vs Load')
     plt.show()
     
     # Loss probability vs Load (zoomed)
@@ -115,10 +115,10 @@ if __name__ == '__main__':
     plt.grid()
     plt.legend()
     plt.xlabel("Load")
-    plt.ylabel("Loss probability")
+    plt.ylabel("Forwarding probability")
     plt.xlim([0,3])
     plt.ylim([0,1])
-    plt.title('Loss probability vs Load (zoomed)')
+    plt.title('Forwarding probability vs Load (zoomed)')
     plt.show()
 
     # Avg time spent in system vs Load

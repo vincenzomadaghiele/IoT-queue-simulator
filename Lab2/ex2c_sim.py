@@ -40,8 +40,8 @@ if __name__ == '__main__':
         time_sys=[]
         lost_pkt=[]
         for f in f_space:
-            data = sim.Measure(0,0,0,0,0,0,0,0,0,0,[],[],[])
-            data_cloud = sim.Measure(0,0,0,0,0,0,0,0,0,0,[],[],[])
+            data = sim.Measure()
+            data_cloud = sim.Measure()
 
             # simulator
             s = sim.Simulator(data, data_cloud, LOAD, SERVICE, ARRIVAL, BUFFER_SIZE, 
@@ -69,7 +69,7 @@ if __name__ == '__main__':
     plt.plot(f_space, T)
     plt.grid()
     plt.xlabel("f")
-    plt.ylabel("Average queuing delay")
+    plt.ylabel("Average queuing delay [ms]")
     plt.title("Average queuing delay for the whole system")
     plt.show()
 
