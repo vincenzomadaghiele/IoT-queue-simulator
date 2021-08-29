@@ -18,6 +18,7 @@ class Measure:
                  timeSystem=[], arrivalTimes=[], lossTimes=[], costs=[],
                  lostPktTypes=[], typeAdelay=[], typeBdelay=[], typeAarrival=[],
                  typeBarrival=[]):
+        
         self.arr = Narr # number of arrivals
         self.dep = Ndep # number of departures
         self.ut = NAveraegUser
@@ -207,7 +208,7 @@ class Simulator():
         
         # STORE DATA
         self.data = data
-        self.data_cloud=data_cloud
+        self.data_cloud = data_cloud
 
     # Event handling functions
     def arrival(self, time, FES, queue, queue_cloud, fog_assign = 'Sorted', 
@@ -413,7 +414,7 @@ class Simulator():
             self.data_cloud.serviceTime += service_time
             client.service_time_cloud = service_time
             # Update busy time 
-            self.CloudServerBusyTime[client.cloudServer] += client.service_time_cloud
+            self.CloudServerBusyTime[client.cloudServer] += service_time
             self.data_cloud.costs.append(service_time * self.CloudServerCosts[client.cloudServer])
             
         elif self.users_cloud > self.CLOUD_SERVERS and self.users_cloud <= self.CLOUD_BUFFER_SIZE + self.CLOUD_SERVERS:
@@ -502,12 +503,12 @@ class Simulator():
             # schedule when the client will finish the server
             self.FES.put((time + service_time, "departure_cloud"))
             self.data_cloud.serviceTime += service_time
-            self.data_cloud.costs.append(service_time * self.CloudServerCosts[next_client.cloudServer])
             
             # Update stats
             next_client.service_time_cloud = service_time
             #self.data_cloud.waitingDelay.append(time - next_client.arrival_time_cloud)
-            self.CloudServerBusyTime[next_client.cloudServer] += next_client.service_time_cloud
+            self.CloudServerBusyTime[next_client.cloudServer] += service_time
+            self.data_cloud.costs.append(service_time * self.CloudServerCosts[next_client.cloudServer])
             
             # update buffer counter
             self.data_cloud.bufferOccupancy += self.users_in_buffer_cloud * (time - self.data_cloud.oldTbuffer)
