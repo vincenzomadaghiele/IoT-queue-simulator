@@ -13,9 +13,7 @@ np.random.seed(42)
 if __name__ == '__main__':
     
     f_av_arrival, f_f = sim.dailySimFunctions()
-
-    # simulate ABBC
-        
+    
     # Micro Data Center (MDC)
     SERVICE = 1000
     ARRIVAL = 500
@@ -32,6 +30,7 @@ if __name__ == '__main__':
     # SIMULATION PARAMS
     SIM_TIME = 86400000 # 24 hours simulation
     
+    #%% ABBC
     # data storage object
     data = sim.Measure()
     data_cloud = sim.Measure()
@@ -54,7 +53,8 @@ if __name__ == '__main__':
     print(f'Loss Probability = {data_cloud.toCloud/data.arr}')
     print(f'Average number of users = {(data.ut + data_cloud.ut)/time}')
     print(f'Total Operational Cost = {sum(s.FogBusyTime * s.FogNodesCosts) + sum(s.CloudServerBusyTime * s.CloudServerCosts)}')
-    
+    print(f'Micro Data Center Operational Cost = {sum(s.FogBusyTime * s.FogNodesCosts)}')
+    print(f'Cloud Data Center Operational Cost = {sum(s.CloudServerBusyTime * s.CloudServerCosts)}')
     
     # Average queueing delay with progressively faster MDC service
     costs_hourlyABBC = []
@@ -100,6 +100,8 @@ if __name__ == '__main__':
     print(f'Loss Probability = {data_cloud.toCloud/data.arr}')
     print(f'Average number of users = {(data.ut + data_cloud.ut)/time}')
     print(f'Total Operational Cost = {sum(s.FogBusyTime * s.FogNodesCosts) + sum(s.CloudServerBusyTime * s.CloudServerCosts)}')
+    print(f'Micro Data Center Operational Cost = {sum(s.FogBusyTime * s.FogNodesCosts)}')
+    print(f'Cloud Data Center Operational Cost = {sum(s.CloudServerBusyTime * s.CloudServerCosts)}')
 
     # Average queueing delay with progressively faster MDC service
     costs_hourlyAABC = []
@@ -145,7 +147,8 @@ if __name__ == '__main__':
     print(f'Loss Probability = {data_cloud.toCloud/data.arr}')
     print(f'Average number of users = {(data.ut + data_cloud.ut)/time}')
     print(f'Total Operational Cost = {sum(s.FogBusyTime * s.FogNodesCosts) + sum(s.CloudServerBusyTime * s.CloudServerCosts)}')
-    
+    print(f'Micro Data Center Operational Cost = {sum(s.FogBusyTime * s.FogNodesCosts)}')
+    print(f'Cloud Data Center Operational Cost = {sum(s.CloudServerBusyTime * s.CloudServerCosts)}')
     
     # Average queueing delay with progressively faster MDC service
     costs_hourlyABCC = []
@@ -180,7 +183,7 @@ if __name__ == '__main__':
                       SERVICE_CLOUD,f_av_arrival, f_f)
     
     # insert constant service rate for all fog Nodes
-    s.CloudServerServTime = [500, 1000, 100, 100]
+    s.CloudServerServTime = [500, 1000, 200, 200]
     s.CloudServerCosts = [0.4, 0.1, 1, 1]
     
     print_everything = False
@@ -192,7 +195,8 @@ if __name__ == '__main__':
     print(f'Loss Probability = {data_cloud.toCloud/data.arr}')
     print(f'Average number of users = {(data.ut + data_cloud.ut)/time}')
     print(f'Total Operational Cost = {sum(s.FogBusyTime * s.FogNodesCosts) + sum(s.CloudServerBusyTime * s.CloudServerCosts)}')
-    
+    print(f'Micro Data Center Operational Cost = {sum(s.FogBusyTime * s.FogNodesCosts)}')
+    print(f'Cloud Data Center Operational Cost = {sum(s.CloudServerBusyTime * s.CloudServerCosts)}')
 
     costs_hourlyBCAA = []
     for i in range(0,24):
@@ -213,6 +217,7 @@ if __name__ == '__main__':
         delay_hourly_avg /= hour_count
         delay_hourly_avgsBCAA.append(delay_hourly_avg)
     
+    
     #%% CBAA
     
     # data storage object
@@ -225,7 +230,7 @@ if __name__ == '__main__':
                       SERVICE_CLOUD,f_av_arrival, f_f)
     
     # insert constant service rate for all fog Nodes
-    s.CloudServerServTime = [1000, 500, 100, 100]
+    s.CloudServerServTime = [1000, 500, 200, 200]
     s.CloudServerCosts = [0.1, 0.4, 1, 1]
     
     print_everything = False
@@ -237,7 +242,8 @@ if __name__ == '__main__':
     print(f'Loss Probability = {data_cloud.toCloud/data.arr}')
     print(f'Average number of users = {(data.ut + data_cloud.ut)/time}')
     print(f'Total Operational Cost = {sum(s.FogBusyTime * s.FogNodesCosts) + sum(s.CloudServerBusyTime * s.CloudServerCosts)}')
-    
+    print(f'Micro Data Center Operational Cost = {sum(s.FogBusyTime * s.FogNodesCosts)}')
+    print(f'Cloud Data Center Operational Cost = {sum(s.CloudServerBusyTime * s.CloudServerCosts)}')
 
     costs_hourlyCBAA = []
     for i in range(0,24):
