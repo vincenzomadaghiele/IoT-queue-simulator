@@ -426,7 +426,7 @@ class Simulator():
         elif self.users_cloud > self.CLOUD_BUFFER_SIZE + self.CLOUD_SERVERS:
             # if buffer is full drop pkt 
             self.data_cloud.toCloud += 1 #this are dropped packets
-            self.data.lossTimes.append(time)
+            self.data_cloud.lossTimes.append(time)
             # remove client from queue
             self.users_cloud -= 1
             client = queue_cloud.pop(-1)
