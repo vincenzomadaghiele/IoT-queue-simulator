@@ -11,7 +11,7 @@ random.seed(42)
 np.random.seed(42)
 
 if __name__ == '__main__':
-        
+    
     # PARAMS
     SERVICE = 100
     LOAD = 2
@@ -39,8 +39,10 @@ if __name__ == '__main__':
         np.random.seed(seed)
 
         # data storage object
-        data = sim.Measure()
-        data_cloud = sim.Measure()
+        data = sim.Measure(0,0,0,0,0,0,0,0,0,0,[],[],[],
+                           [],[],[],[],[],[],[],[],[])
+        data_cloud = sim.Measure(0,0,0,0,0,0,0,0,0,0,[],[],[],
+                                 [],[],[],[],[],[],[],[],[])
 
         # simulator
         s = sim.Simulator(data, data_cloud, LOAD, SERVICE, ARRIVAL, BUFFER_SIZE, 

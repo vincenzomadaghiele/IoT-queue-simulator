@@ -21,27 +21,30 @@ if __name__ == '__main__':
     BUFFER_SIZE = 7
     FOG_NODES = 1 
     f = 0.7
-
-    SERVICE_CLOUD = 50
-    CLOUD_BUFFER_SIZE = 10
+    SERVICE_CLOUD = 20
+    CLOUD_BUFFER_SIZE = 20
     CLOUD_SERVERS = 1
     
     # SIMULATION PARAMS
     SIM_TIME = 1000000
     
-
-    time_tot=[]
-    lost_tot=[]
-    num_sim=50
-    f_space=np.linspace(0,1,21)
+    time_tot = []
+    lost_tot = []
+    num_sim = 50
+    BUFFERS = np.linspace(0,20,21)
     for seed in range(num_sim):
+        
         random.seed(seed)
         np.random.seed(seed)
         time_sys=[]
         lost_pkt=[]
-        for f in f_space:
-            data = sim.Measure()
-            data_cloud = sim.Measure()
+        
+        for CLOUD_BUFFER_SIZE in BUFFERS:
+            
+            data = sim.Measure(0,0,0,0,0,0,0,0,0,0,[],[],[],
+                               [],[],[],[],[],[],[],[],[])
+            data_cloud = sim.Measure(0,0,0,0,0,0,0,0,0,0,[],[],[],
+                                     [],[],[],[],[],[],[],[],[])
 
             # simulator
             s = sim.Simulator(data, data_cloud, LOAD, SERVICE, ARRIVAL, BUFFER_SIZE, 
@@ -56,26 +59,26 @@ if __name__ == '__main__':
         time_tot.append(time_sys)
         lost_tot.append(lost_pkt)
 
-    T=np.zeros(len(f_space))
+    T=np.zeros(len(BUFFERS))
     for t in time_tot:
         T+=np.array(t)
     T/=num_sim
 
-    L=np.zeros(len(f_space))
+    L=np.zeros(len(BUFFERS))
     for l in lost_tot:
         L+=np.array(l)
     L/=num_sim
-    
-    plt.plot(f_space, T)
+
+    plt.plot(BUFFERS, T)
     plt.grid()
-    plt.xlabel("f")
+    plt.xlabel("CDC buffer size")
     plt.ylabel("Average queuing delay [ms]")
     plt.title("Average queuing delay for the whole system")
     plt.show()
 
-    plt.plot(f_space, L)
+    plt.plot(BUFFERS, L)
     plt.grid()
-    plt.xlabel("f")
+    plt.xlabel("CDC buffer size")
     plt.ylabel("Loss probability")
     #plt.ylim([0,1])
     plt.title("Probability to lose a packet")

@@ -33,7 +33,7 @@ if __name__ == '__main__':
         for LOAD in LOADS:
             
             # DATA OBJECT
-            data = sim.Measure()
+            data = sim.Measure(0,0,0,0,0,0,0,0,0,0,[],[])
             
             # SIMULATION PARAMETERS
             SERVICE = 1000.0
@@ -73,7 +73,7 @@ if __name__ == '__main__':
     for LOAD in LOADS:
         
         # DATA OBJECT
-        data = sim.Measure()
+        data = sim.Measure(0,0,0,0,0,0,0,0,0,0,[],[])
         
         # SIMULATION PARAMETERS
         SERVICE = 1000.0

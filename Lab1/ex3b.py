@@ -2,10 +2,12 @@
 Exercise 3b
 '''
 
+import random
 import numpy as np
 from matplotlib import pyplot as plt
 import simulator_class as sim
 
+random.seed(42)
 np.random.seed(42)
 
 if __name__ == '__main__':
@@ -28,7 +30,7 @@ if __name__ == '__main__':
         for BUFFER_SIZE in BUFFER_SIZES:
             
             # DATA OBJECT
-            data = sim.Measure()
+            data = sim.Measure(0,0,0,0,0,0,0,0,0,0,[],[])
             
             # SIMULATION PARAMETERS
             LOAD = 4

@@ -19,7 +19,7 @@ if __name__ == '__main__':
     for SERVICE in range (1,380,2):
         
         # data storage object
-        data = sim.Measure()
+        data = sim.Measure(0,0,0,0,0,0,0,0,0,0,[],[])
         
         ARRIVAL = 30.0
         LOAD = SERVICE/ARRIVAL

@@ -31,7 +31,7 @@ if __name__ == '__main__':
         for i in range(NUM_SIMULATIONS):
             
             # DATA OBJECT
-            data = sim.Measure()
+            data = sim.Measure(0,0,0,0,0,0,0,0,0,0,[],[])
     
             # simulator
             s = sim.Simulator(data, LOAD, SERVICE, ARRIVAL, 
@@ -72,7 +72,7 @@ if __name__ == '__main__':
         for i in range(NUM_SIMULATIONS):
             
             # DATA OBJECT
-            data = sim.Measure()
+            data = sim.Measure(0,0,0,0,0,0,0,0,0,0,[],[])
             
             # simulator
             s = sim.Simulator(data, LOAD, SERVICE, ARRIVAL, 

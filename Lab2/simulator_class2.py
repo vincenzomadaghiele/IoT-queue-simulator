@@ -600,8 +600,10 @@ class Simulator():
 
 if __name__ == '__main__':
     
-    data = Measure()
-    data_cloud = Measure()
+    data = Measure(0,0,0,0,0,0,0,0,0,0,[],[],[],
+                   [],[],[],[],[],[],[],[],[])
+    data_cloud = Measure(0,0,0,0,0,0,0,0,0,0,[],[],[],
+                         [],[],[],[],[],[],[],[],[])
     
     LOAD = 0.85
     SERVICE = 10.0

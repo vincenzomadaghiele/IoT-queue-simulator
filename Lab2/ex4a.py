@@ -32,8 +32,10 @@ if __name__ == '__main__':
     SIM_TIME = 86400000 # 24 hours simulation
     
     # data storage object
-    data = sim.Measure()
-    data_cloud = sim.Measure()
+    data = sim.Measure(0,0,0,0,0,0,0,0,0,0,[],[],[],
+                       [],[],[],[],[],[],[],[],[])
+    data_cloud = sim.Measure(0,0,0,0,0,0,0,0,0,0,[],[],[],
+                             [],[],[],[],[],[],[],[],[])
 
     # simulator
     s = sim.Simulator(data, data_cloud, LOAD, SERVICE, ARRIVAL, BUFFER_SIZE, 
@@ -72,8 +74,8 @@ if __name__ == '__main__':
     arrived_pkts_hourly = []
     for i in range(0,24):
         arrived_pkts = 0
-        for j in range(len(data_cloud.arrivalTimes)):
-            if data_cloud.arrivalTimes[j] > i * 3600000 and data_cloud.arrivalTimes[j] < (i+1) * 3600000:
+        for j in range(len(data.arrivalTimes)):
+            if data.arrivalTimes[j] > i * 3600000 and data.arrivalTimes[j] < (i+1) * 3600000:
                 arrived_pkts += 1
         arrived_pkts_hourly.append(arrived_pkts)
 

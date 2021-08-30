@@ -1,5 +1,5 @@
 '''
-Exercise 3b
+Exercise 3a
 '''
 
 import random
@@ -13,22 +13,21 @@ np.random.seed(42)
 if __name__ == '__main__':
     
     Tq = 1500 # max average queueing time
-    FOG_NODES_NUM = [*range(1, 11, 1)]
+    SERVICE_TIMES = [*range(1, 1000, 5)]
     
     num_sim = 1
-    tot_queueing_delay = np.zeros(len(FOG_NODES_NUM))
+    tot_queueing_delay = np.zeros(len(SERVICE_TIMES))
     for seed in range(num_sim):
         random.seed(seed)
         np.random.seed(seed)
         queueing_delay = []
-        for FOG_NODES in FOG_NODES_NUM:
+        for SERVICE in SERVICE_TIMES:
         
             # MDC
             ARRIVAL = 500
-            SERVICE = 1000
             LOAD = SERVICE/ARRIVAL
             BUFFER_SIZE = 10
-            #FOG_NODES = 1
+            FOG_NODES = 1
             
             # CDC
             f = 0.8
@@ -40,8 +39,10 @@ if __name__ == '__main__':
             SIM_TIME = 300000
             
             # data storage object
-            data = sim.Measure()
-            data_cloud = sim.Measure()
+            data = sim.Measure(0,0,0,0,0,0,0,0,0,0,[],[],[],
+                               [],[],[],[],[],[],[],[],[])
+            data_cloud = sim.Measure(0,0,0,0,0,0,0,0,0,0,[],[],[],
+                                     [],[],[],[],[],[],[],[],[])
         
             # simulator
             s = sim.Simulator(data, data_cloud, LOAD, SERVICE, ARRIVAL, BUFFER_SIZE, 
@@ -57,12 +58,13 @@ if __name__ == '__main__':
     tot_queueing_delay /= num_sim
     
     # Average queueing delay with progressively faster MDC service
-    plt.plot(FOG_NODES_NUM, tot_queueing_delay, label='Queueing delay')
-    plt.plot(Tq * np.ones(11) , '--', label='Tq')
+    plt.plot(SERVICE_TIMES, tot_queueing_delay, label='Queueing delay')
+    plt.plot(Tq * np.ones(1000) , '--', label='Tq')
     plt.grid()
     plt.legend()
-    plt.xlabel("MDC fog nodes")
+    plt.xlabel("Average service MDC time [ms]")
     plt.ylabel("Average queueing delay [ms]")
-    plt.title('Average queueing delay with progressively more MDC fog nodes')
+    #plt.xlim([0,200])
+    plt.title('Average queueing delay with progressively slower MDC service')
     plt.show()
 
