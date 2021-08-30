@@ -44,13 +44,13 @@ if __name__ == '__main__':
                       SERVICE_CLOUD,f_av_arrival, f_f)
     
     # insert constant service rate for all fog Nodes
-    s.CloudServerServTime = [200, 500]
-    s.CloudServerCosts = [1, 0.4]
+    s.CloudServerServTime = [200, 200]
+    s.CloudServerCosts = [1, 1]
     
     print_everything = False
     data, data_cloud, time, _, _ = s.simulate(print_everything)
     
-    print('A-B simulation')
+    print('A-A simulation')
     print('-'*40)
     print(f'Average Queueing Delay [ms] = {(data.delay + data_cloud.delay) / (data.dep + data_cloud.dep)}')
     print(f'Loss Probability = {data_cloud.toCloud/data.arr}')

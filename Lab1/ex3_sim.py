@@ -16,6 +16,7 @@ if __name__ == '__main__':
     tot_time_sys = []
     tot_th_av_time_sys_list = []
     tot_pB_list = []
+    tot_av_buf_oc = []
     LOADS = np.linspace(1e-5,13,100).tolist()
     BUFFER_SIZES = [0,5,float('inf')]
     
@@ -26,6 +27,7 @@ if __name__ == '__main__':
         loss_pr = []
         time_sys = []
         pB_list = []
+        av_buf_oc = []
         th_av_time_sys_list = []
         
         for LOAD in LOADS:
@@ -49,11 +51,13 @@ if __name__ == '__main__':
             load_list.append(LOAD)
             loss_pr.append(data.toCloud/data.arr)
             time_sys.append(data.delay/data.dep)
+            av_buf_oc.append(data.bufferOccupancy/time)
             
         tot_loss_pr.append(loss_pr)
         tot_time_sys.append(time_sys)
         tot_th_av_time_sys_list.append(th_av_time_sys_list)
         tot_pB_list.append(pB_list)
+        tot_av_buf_oc.append(av_buf_oc)
         
     # Buf = 5, FOG_NODES = 1
     BUFFER_SIZE = 5
@@ -63,6 +67,7 @@ if __name__ == '__main__':
     loss_pr = []
     time_sys = []
     pB_list = []
+    av_buf_oc = []
     th_av_time_sys_list = []
     
     for LOAD in LOADS:
@@ -85,11 +90,13 @@ if __name__ == '__main__':
         load_list.append(LOAD)
         loss_pr.append(data.toCloud/data.arr)
         time_sys.append(data.delay/data.dep)
+        av_buf_oc.append(data.bufferOccupancy/time)
         
     tot_loss_pr.append(loss_pr)
     tot_time_sys.append(time_sys)
     tot_th_av_time_sys_list.append(th_av_time_sys_list)
     tot_pB_list.append(pB_list)
+    tot_av_buf_oc.append(av_buf_oc)
 
 
     #%% Plot statistics
@@ -100,7 +107,8 @@ if __name__ == '__main__':
               'Buf=inf, Fog=2', 'Buf=5, Fog=1']
     # Loss probability vs Load
     for i in range(len(tot_loss_pr)):
-        plt.plot(load_list, tot_loss_pr[i], '.-', linewidth=.7, c=colors[1][i], label=labels[i])
+        plt.plot(load_list, tot_loss_pr[i], '.-', linewidth=.7, 
+                 c=colors[1][i], label=labels[i])
     plt.grid()
     plt.legend()
     plt.xlabel("Load")
@@ -111,7 +119,8 @@ if __name__ == '__main__':
     
     # Loss probability vs Load (zoomed)
     for i in range(len(tot_loss_pr)):
-        plt.plot(load_list, tot_loss_pr[i], '.-', linewidth=0.5, c=colors[1][i], label=labels[i])
+        plt.plot(load_list, tot_loss_pr[i], '.-', linewidth=0.5, 
+                 c=colors[1][i], label=labels[i])
     plt.grid()
     plt.legend()
     plt.xlabel("Load")
@@ -123,14 +132,29 @@ if __name__ == '__main__':
 
     # Avg time spent in system vs Load
     for i in range(len(tot_time_sys)):
-        plt.plot(load_list, tot_time_sys[i], '.-', linewidth=0.5, c=colors[1][i], label=labels[i])
+        plt.plot(load_list, tot_time_sys[i], '.-', linewidth=0.5, 
+                 c=colors[1][i], label=labels[i])
     plt.grid()
     plt.legend()
     plt.xlabel("Load")
     plt.ylabel("Avgerage time [ms]")
-    plt.xlim([0,4])
+    #plt.xlim([0,4])
+    plt.ylim([0,10000])
     plt.title('Avg time spent in system vs Load')
     plt.show()
+    
+    # Avg buffer occupancy vs Load
+    for i in range(len(tot_av_buf_oc)):
+        plt.plot(load_list, tot_av_buf_oc[i], '.-', linewidth=0.5, 
+                 c=colors[1][i], label=labels[i])
+    plt.grid()
+    plt.legend()
+    plt.xlabel("Load")
+    plt.ylabel("Average Buffer Occupancy")
+    plt.ylim([0,7])
+    plt.title('Avg buffer occupancy vs Load')
+    plt.show()
+
 
 
 
